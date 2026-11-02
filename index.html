@@ -163,10 +163,27 @@ nav button.on{color:var(--acc)}
     <div class="card">
       <h2>Novo jogador</h2>
       <label>Nome</label><input id="cName" type="text" value="Dudu">
-      <div class="grid2">
-        <div>
-          <label>Idade (16 a 30)</label>
-          <input id="cAge" type="number" min="16" max="30" value="18">
+    <div class="grid2"> 
+    <div> 
+    <label>Idade (16 a 30)</label> 
+    <input id="cAge" type="number" min="16" max="30" value="18" onkeydown="return false;">
+      /* Remove a aparência de caixa tradicional do input */
+input[type="number"] {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  font-weight: bold;
+  width: 50px; /* Ajuste o tamanho para caber apenas o número */
+  text-align: center;
+  outline: none;
+}
+
+/* Garante que as setas continuem visíveis e funcionais */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1; /* Força as setas a ficarem sempre visíveis */
+}
+
         </div>
         <div>
           <label>Posição</label>
@@ -440,22 +457,22 @@ nav button.on{color:var(--acc)}
 <script>
 // ===== Dados =====
 const DIVS=[
-  {name:"Amadora",need:8,str:3,teams:["Capinzal FC","Dendê FC","Impedidos do Goti","Real Elite Clube","Fluxo Clube"]},
-  {name:"Série B",need:10,str:5,teams:["Funkbal Clube","Fúria Negra","G4X FC","Lord SC","Nivelados FC"]},
-  {name:"Série A",need:12,str:7,teams:["Real Elite Clube","Fluxo Clube","Dendê FC","Impedidos do Goti","Capinzal FC","Funkbal Clube","Fúria Negra"]},
-  {name:"Campeonato da Knights League",need:10,str:9,teams:["Knights Elite","Titãs da Zona","Fênix FC","Lobos Urbanos","Samurais FC","Reis do Asfalto"]},
+  {name:"Amadora",need:8,str:3,teams:["Capinzal FC","Titãs da Zona","Fênix FC","Lobos Urbanos","Samurais FC","Reis do Asfalto"]},
+  {name:"Série B",need:10,str:5,teams:["Knights Elite","Fúria Negra","Lions FC","Lord SC","Desnivelados FC"]},
+  {name:"Série A",need:12,str:7,teams:["G4X","Flexa Clube","Dendelix FC","Impedidos do Goti","Capinzal FC","Funkfall Clube","Fúria Negra"]},
+  {name:"Campeonato da Knights League",need:10,str:9,teams:["Funkfall Clube","Dendelix FC","Impedidos do Goti","Unreal Elite Clube","Flexa Clube"]},
 ];
 const ROSTERS={
   "Capinzal FC":["Maicom Santana","Gabriel Medeiro","Davi Lyra","Henry Jaba","Kléber Barros","Ian Graça","Vitor Florêncio","André Dizoti"],
-  "Dendê FC":["Rúbio Magalhães","Guilherme Silveira","Tales Vicentino","Gabriel Silveira","Renan Assunção","Matias Tintino","Vini Sousa","Breno Teresinha"],
+  "Dendelix FC":["Rúbio Magalhães","Guilherme Silveira","Tales Vicentino","Gabriel Silveira","Renan Assunção","Matias Tintino","Vini Sousa","Breno Teresinha"],
   "Impedidos do Goti":["João Pedro Crus","Gabriel Menocci","Marcelo Silveira Jr.","Lucas Donadon","Fernando Silveira","Luiz Felipe Almeidinha","Guilherme Bernardelli","Vitor Ferrero"],
-  "Real Elite Clube":["Matheus Silveira","Marlon Ribeiro","Gustavo Rochinha","João Vitor Fenatti","Andrei Profeta","Gabriel Lisbôa","Eduardo Andrez","Isaque Sanders"],
-  "Fluxo Clube":["Vinícius Almeida (Melequeira)","Vini Alexandrino","Vitor Martinez (VM)","Gabriel de Sousa (Intero)","Caio Sanches","Julio Cesar Carvalhal","Sérgio Filhão","Murilo Menetti"],
-  "Funkbal Clube":["Douglas Gurgueira","Luiz Paolo","Jhonatan Goes (Mlk Joe)","Thiago Nascimentos","Flávio Stokunas","Odlanier Madeira","Bruno Maya","Marcelo Silvinha"],
+  "Unreal Elite Clube":["Matheus Silveira","Marlon Ribeiro","Gustavo Rochinha","João Vitor Fenatti","Andrei Profeta","Gabriel Lisbôa","Eduardo Andrez","Isaque Sanders"],
+  "Flexa Clube":["Vinícius Almeida (Melequeira)","Vini Alexandrino","Vitor Martinez (VM)","Gabriel de Sousa (Intero)","Caio Sanches","Julio Cesar Carvalhal","Sérgio Filhão","Murilo Menetti"],
+  "Funkfall Clube":["Douglas Gurgueira","Luiz Paolo","Jhonatan Goes (Mlk Joe)","Thiago Nascimentos","Flávio Stokunas","Odlanier Madeira","Bruno Maya","Marcelo Silvinha"],
   "Fúria Negra":["Matheus dos Santo","Vitor Hugo da Silveira","João Pelegrino","Guilherme Monegatti","Gabriel Pastucho","Ryan Limão","Caio Carvalheiro","Murilo Donatto"],
   "G4X FC":["Wembley Luís","Kenu Gonçalvez","Vitor Sampaulo","Igor Rezendes","Luiz Galindo Netto","Felipe Cassiani","Nikolas Olivera","Lucas Silvano"],
   "Lord SC":["Lucas Henriquez","Higor da Costella","Lucas Japinha","Júlio César Rodrigão","Josué dos Santo","Matheus Lisbona","Kelvis Nunez","Nathan Lúcio"],
-  "Nivelados FC":["Ivo Alvez","Breno Aranha","Bruno dos Santana","Matheus Nerez","Gustavo Simão","Nicolas Barutto","Caio Garcio","Bruno Mendez"],
+  "Desnivelados FC":["Ivo Alvez","Breno Aranha","Bruno dos Santana","Matheus Nerez","Gustavo Simão","Nicolas Barutto","Caio Garcio","Bruno Mendez"],
   "Knights Elite":["Rafa Tavares","Bruno Lima","Caio Mendonça","Pedro Gomes","Erick Duarte"],
 };
 const DEFAULT_MATES=["Rafa Tavares","Bruno Lima","Caio Mendonça","Pedro Gomes","Erick Duarte"];
