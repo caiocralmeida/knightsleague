@@ -1,0 +1,1356 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Knights League</title>
+<style>
+:root{--bg:#0e1116;--card:#1a1f27;--line:#2a313c;--txt:#e8ecf1;--mut:#8a94a3;--acc:#f5b400;--ok:#3ecf8e;--bad:#ff5d5d;--blue:#4aa3ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent}
+.hidden{display:none!important}
+header{position:sticky;top:0;z-index:5;background:#000;border-bottom:2px solid var(--acc);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hr{display:flex;align-items:center;gap:8px}
+.ttl{font-weight:800;letter-spacing:1px;font-size:16px}
+.big2{font-size:24px;margin-top:6px}
+.sub{font-size:12px;color:var(--mut)}
+main{max-width:520px;margin:0 auto;padding:12px 12px 96px}
+.center{text-align:center}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.card h2{font-size:15px;margin:0 0 10px;color:var(--acc)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0;font-size:14px}
+.mut{color:var(--mut);font-size:13px}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin:3px 0 8px}
+.bar>div{height:100%;background:var(--ok);transition:width .3s}
+.bar.warn>div{background:var(--acc)}
+.bar.bad>div{background:var(--bad)}
+button{background:var(--acc);color:#111;border:0;border-radius:11px;padding:12px;font-weight:700;font-size:14px;width:100%;margin-top:6px;cursor:pointer;font-family:inherit}
+button.sec{background:#262d37;color:var(--txt)}
+button.danger{background:var(--bad);color:#fff}
+button.ghost{background:none;border:1px solid var(--line);color:var(--txt);width:auto;padding:6px 10px;margin:0}
+button.small{padding:5px 10px;font-size:12px;width:auto;margin:0 0 0 6px}
+button.sel{outline:2px solid var(--acc)}
+button:disabled{opacity:.35;cursor:not-allowed}
+.opt{text-align:left;display:block}
+.opt small{display:block;font-weight:400;color:var(--mut);font-size:12px;margin-top:3px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.menu button{font-size:16px;padding:16px;margin-top:10px}
+.tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:6px;background:var(--line);color:var(--mut);margin:2px 4px 2px 0}
+input,select{width:100%;background:#0b0e13;color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:15px;margin-top:4px;font-family:inherit}
+label{font-size:12px;color:var(--mut);display:block;margin-top:10px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#000;border-top:1px solid var(--line);z-index:6}
+nav button{flex:1;background:none;color:var(--mut);border-radius:0;margin:0;padding:12px 0;font-size:11px}
+nav button.on{color:var(--acc)}
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#000;border:1px solid var(--acc);padding:9px 14px;border-radius:10px;font-size:13px;z-index:30;display:none;max-width:92%;text-align:center}
+.good{color:var(--ok)}
+.badtxt{color:var(--bad)}
+.gold{color:var(--acc)}
+.dot{display:inline-block;width:10px;height:10px;background:var(--line);margin-right:3px;border-radius:2px}
+.dot.on{background:var(--bad)}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;background:var(--acc);color:#111;font-weight:800;font-size:20px;border-radius:10px;flex-shrink:0}
+.warnbox{border:1px solid var(--bad);color:#ffb3b3;padding:8px;border-radius:9px;font-size:13px;margin:8px 0}
+.stat{display:flex;justify-content:space-between;background:#11151b;border-radius:9px;padding:9px;margin:5px 0;font-size:13px}
+.log{max-height:220px;overflow:auto;font-size:13px;line-height:1.5}
+.log p{margin:4px 0}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--mut);margin-bottom:8px}
+.lg{display:inline-flex;align-items:center;gap:5px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.cell{background:#11151b;border-radius:8px;padding:6px 2px;text-align:center;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:58px;justify-content:center}
+.cell.now{outline:1px solid var(--acc)}
+.sq,.ci,.dotw{display:inline-block}
+.sq{width:14px;height:14px;border-radius:3px}
+.win{background:var(--ok)}
+.draw{background:var(--mut)}
+.loss{background:var(--bad)}
+.ci{width:14px;height:14px;border-radius:50%;border:2px solid var(--acc)}
+.dotw{width:4px;height:4px;border-radius:50%;background:var(--line);margin:5px 0}
+.item{background:#11151b;border-radius:10px;padding:10px;margin:6px 0}
+.item .row{padding:2px 0}
+.trophies{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.trophy{background:#11151b;border-radius:10px;padding:10px 6px;text-align:center;font-size:11px}
+.trophy b{display:block;color:var(--acc);margin-top:4px}
+.ach{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:6px 0;border-bottom:1px solid var(--line)}
+.mark{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:middle}
+#sMatch{position:fixed;inset:0;background:#1f7a3a;z-index:20;overflow:hidden}
+.field{position:absolute;inset:0;width:100%;height:100%}
+#ballG{transition:transform .45s ease-out}
+.hud{position:absolute;top:0;left:0;right:0;padding:12px 14px 30px;background:linear-gradient(#000d,#0000);z-index:4;text-align:center}
+.score{font-size:17px;font-weight:800;letter-spacing:.5px}
+.clock{font-size:12px;color:#d7e9dc}
+.pop{position:absolute;left:12px;right:12px;background:rgba(14,17,22,.97);border:1px solid var(--acc);border-radius:14px;padding:12px;z-index:5;max-height:78%;overflow:auto}
+.pop.center{top:50%;transform:translateY(-50%)}
+.pop.bottom{bottom:12px}
+@keyframes flashF{0%{filter:brightness(1)}25%{filter:brightness(1.7) saturate(1.3)}100%{filter:brightness(1)}}
+.field.flash{animation:flashF .9s ease-out}
+.evopt{text-align:left;display:block}
+.pop h2{font-size:15px;margin:0 0 8px;color:var(--acc)}
+</style>
+</head>
+<body>
+
+<header id="top" class="hidden">
+  <div><div class="ttl">KNIGHTS LEAGUE</div><div class="sub" id="hdr"></div></div>
+  <div class="hr"><span class="sub" id="money"></span><button class="ghost small" onclick="goMenu()">Menu</button></div>
+</header>
+<div class="toast" id="toast"></div>
+
+<!-- MENU -->
+<section id="sMenu" class="hidden">
+  <main>
+    <div class="card center" style="margin-top:24px">
+      <svg viewBox="0 0 200 200" width="190" height="190" aria-hidden="true">
+        <g fill="#e0ad2b" stroke="#111" stroke-width="1.5" stroke-linejoin="round">
+          <!-- elmo -->
+          <circle cx="100" cy="52" r="30"/>
+          <polygon points="74,48 100,42 100,78 80,74"/>
+          <polygon points="100,42 126,48 124,74 100,78"/>
+          <polygon points="78,74 124,74 112,96 100,102 88,96"/>
+          <polyline points="100,42 100,78" fill="none"/>
+          <!-- rebites do elmo -->
+          <circle cx="84" cy="80" r="2.6"/><circle cx="92" cy="82" r="2.6"/><circle cx="100" cy="83" r="2.6"/><circle cx="108" cy="82" r="2.6"/><circle cx="116" cy="80" r="2.6"/>
+          <!-- gorjal -->
+          <polygon points="66,94 134,94 124,108 76,108"/>
+          <!-- ombreiras -->
+          <circle cx="62" cy="96" r="9"/>
+          <circle cx="138" cy="96" r="9"/>
+          <circle cx="52" cy="90" r="5"/><circle cx="148" cy="90" r="5"/>
+          <rect x="38" y="108" width="15" height="15" transform="rotate(-12 45 115)"/>
+          <rect x="44" y="124" width="15" height="15" transform="rotate(-12 51 131)"/>
+          <rect x="37" y="140" width="15" height="15" transform="rotate(-12 44 147)"/>
+          <rect x="147" y="108" width="15" height="15" transform="rotate(12 154 115)"/>
+          <rect x="141" y="124" width="15" height="15" transform="rotate(12 148 131)"/>
+          <rect x="148" y="140" width="15" height="15" transform="rotate(12 155 147)"/>
+          <!-- peitoral -->
+          <path d="M66,108 L134,108 L140,134 L126,162 L100,176 L74,162 L60,134 Z"/>
+          <line x1="100" y1="108" x2="100" y2="176"/>
+          <path d="M66,134 Q100,146 134,134"/>
+          <path d="M80,120 L100,140 L120,120"/>
+          <polygon points="100,140 80,162 100,176 120,162" fill="#c8961f"/>
+          <!-- cinto e faixas -->
+          <rect x="74" y="178" width="52" height="7" rx="1"/>
+          <rect x="72" y="188" width="56" height="7" rx="1"/>
+        </g>
+      </svg>
+      <div class="ttl big2">KNIGHTS LEAGUE</div>
+      <div class="sub">Carreira de jogador de fut7</div>
+      <div class="menu">
+        <button onclick="newGame()">Nova carreira</button>
+        <button class="sec" id="btnCont" onclick="continueGame()">Continuar carreira</button>
+        <button class="sec" onclick="show('sHelp')">Como jogar</button>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- AJUDA -->
+<section id="sHelp" class="hidden">
+  <main>
+    <div class="card">
+      <h2>Como jogar</h2>
+      <p class="mut">Cada semana permite no máximo 2 treinos e 1 marketing. Descansar recupera energia e derruba o moral. Se houver jogo na semana, o descanso libera o dia de jogo, e a semana termina depois da partida. Sem jogo, descansar encerra a semana.</p>
+      <p class="mut">Energia cai com treino, marketing e partidas. Moral cai com descanso, marketing e derrotas, e sobe com vitórias.</p>
+      <p class="mut">Partida: antes de entrar em campo, escolha a tática e a preparação. Em cada lance escolha a jogada. Atributos, equipamentos, tática, força do adversário, energia e sorte decidem o resultado.</p>
+      <p class="mut">Loja: compre equipamentos (uma vez cada) e consumíveis. Pessoal: veja sua identidade, patrocínios, conquistas e a sala de troféus. Depois dos 30 anos você pode se aposentar.</p>
+      <p class="mut">Jogos acontecem a cada 1 ou 2 semanas. Próximos jogos ficam na Semana e o calendário completo fica na Equipe.</p>
+      <button class="sec" onclick="show('sMenu')">Voltar</button>
+    </div>
+  </main>
+</section>
+
+<!-- CRIACAO -->
+<section id="sNew" class="hidden">
+  <main>
+    <div class="card">
+      <h2>Novo jogador</h2>
+      <label>Nome</label><input id="cName" type="text" value="Dudu">
+      <div class="grid2">
+        <div>
+          <label>Idade (16 a 30)</label>
+          <input id="cAge" type="number" min="16" max="30" value="18">
+        </div>
+        <div>
+          <label>Posição</label>
+          <select id="cPos">
+            <option value="ala">Ala</option>
+            <option value="fixo">Fixo</option>
+            <option value="pivo">Pivô</option>
+            <option value="goleiro">Goleiro</option>
+          </select>
+        </div>
+      </div>
+      <label>Personalidade</label>
+      <select id="cTrait">
+        <option value="craque">Craque de rua: drible +2</option>
+        <option value="disciplinado">Disciplinado: treino melhor, moral estável</option>
+        <option value="pavio">Pavio curto: chute +2, mais faltas</option>
+      </select>
+      <p class="mut" style="margin-top:12px">Distribua 12 pontos (cada atributo começa em 3, máximo 10 na criação).</p>
+      <div id="cAttrs"></div>
+      <button onclick="startCareer()">Começar na Amadora</button>
+      <button class="sec" onclick="show('sMenu')">Voltar</button>
+    </div>
+  </main>
+</section>
+
+<!-- SEMANA -->
+<section id="sHome" class="hidden">
+  <main>
+    <div class="card">
+      <div class="row" style="justify-content:flex-start">
+        <div class="badge" id="pBadge">0</div>
+        <div style="margin-left:10px">
+          <div style="font-weight:800;font-size:16px" id="pName"></div>
+          <div class="sub" id="pInfo"></div>
+        </div>
+      </div>
+      <div class="row"><span class="mut">Energia</span><span id="pEn"></span></div>
+      <div class="bar" id="bEn"><div></div></div>
+      <div class="row"><span class="mut">Moral</span><span id="pMo"></span></div>
+      <div class="bar" id="bMo"><div></div></div>
+      <div class="row"><span class="mut">Fama</span><span id="pFa"></span></div>
+      <div class="bar" id="bFa"><div></div></div>
+    </div>
+    <div class="card">
+      <h2 id="wkInfo">Semana</h2>
+      <p class="mut" id="wkText"></p>
+      <div id="wkLimits"></div>
+      <div class="grid2">
+        <button class="sec" id="btnTrain" onclick="show('sTrain')">Treinar</button>
+        <button class="sec" id="btnMkt" onclick="show('sMkt')">Marketing</button>
+      </div>
+      <button class="sec" id="btnRest" onclick="doRest()">Descansar</button>
+      <div id="dayBox" class="hidden">
+        <button onclick="startDay()">Ir pro jogo</button>
+      </div>
+    </div>
+    <div class="card hidden" id="evBox">
+      <h2>Evento</h2>
+      <h3 id="evTitle" style="margin:0 0 6px;font-size:15px"></h3>
+      <p class="mut" id="evText"></p>
+      <div id="evOpts"></div>
+    </div>
+    <div class="card">
+      <h2>Notícias</h2>
+      <div class="log" id="news"></div>
+    </div>
+    <div class="card">
+      <h2>Próximos jogos</h2>
+      <div id="upcoming"></div>
+    </div>
+  </main>
+</section>
+
+<!-- TREINO -->
+<section id="sTrain" class="hidden">
+  <main>
+    <div class="card">
+      <h2>Treino</h2>
+      <p class="mut" id="trLimit"></p>
+      <div id="trList"></div>
+    </div>
+    <div class="card">
+      <h2>Atributos</h2>
+      <p class="mut">Pontos disponíveis: <b id="pts">0</b> · <span id="xpInfo"></span></p>
+      <div id="attrList"></div>
+    </div>
+  </main>
+</section>
+
+<!-- MARKETING -->
+<section id="sMkt" class="hidden">
+  <main>
+    <div class="card">
+      <h2>Marketing</h2>
+      <p class="mut">Limite de 1 ação por semana. Marketing gasta energia e derruba o moral.</p>
+      <div id="mkList"></div>
+    </div>
+  </main>
+</section>
+
+<!-- LOJA -->
+<section id="sShop" class="hidden">
+  <main>
+    <div class="card">
+      <h2>Consumíveis</h2>
+      <p class="mut">Use fora da partida. Saldo: <b id="shopMoney"></b></p>
+      <div id="shopCons"></div>
+    </div>
+    <div class="card">
+      <h2>Equipamentos</h2>
+      <p class="mut">Cada item é comprado uma vez e soma permanentemente aos atributos.</p>
+      <div id="shopEquip"></div>
+    </div>
+  </main>
+</section>
+
+<!-- PESSOAL -->
+<section id="sPers" class="hidden">
+  <main>
+    <div class="card">
+      <h2>Identidade</h2>
+      <div class="row"><span class="mut">Overall atual</span><b id="iOvr"></b></div>
+      <div class="row"><span class="mut">Nome</span><span id="iName"></span></div>
+      <div class="row"><span class="mut">Posição</span><span id="iPos"></span></div>
+      <div class="row"><span class="mut">Time atual</span><span id="iClub"></span></div>
+      <div class="row"><span class="mut">Nível atual</span><span id="iLvl"></span></div>
+      <div class="row"><span class="mut">Personalidade</span><span id="iTrait"></span></div>
+      <div class="row"><span class="mut">Idade</span><span id="iAge"></span></div>
+    </div>
+    <div class="card">
+      <h2>Estatísticas</h2>
+      <div id="pStats"></div>
+    </div>
+    <div class="card">
+      <h2>Patrocínios</h2>
+      <p class="mut">Pagos a cada semana enquanto a fama estiver na faixa mínima.</p>
+      <div id="pSponsors"></div>
+    </div>
+    <div class="card">
+      <h2>Conquistas</h2>
+      <div id="pAch"></div>
+    </div>
+    <div class="card">
+      <h2>Sala de troféus</h2>
+      <div id="trophyRoom"></div>
+    </div>
+    <div class="card" id="retireBox">
+      <h2>Carreira</h2>
+      <p class="mut">A aposentadoria está disponível a partir dos 30 anos e encerra a carreira.</p>
+      <button class="danger" onclick="retire()">Aposentar</button>
+    </div>
+  </main>
+</section>
+
+<!-- EQUIPE -->
+<section id="sClub" class="hidden">
+  <main>
+    <div class="card">
+      <h2>Contrato atual</h2>
+      <div class="row"><span class="mut">Clube</span><span id="cClub"></span></div>
+      <div class="row"><span class="mut">Salário mensal</span><span id="cSal"></span></div>
+      <div class="row"><span class="mut">Bônus por gol</span><span id="cBon"></span></div>
+      <div class="row"><span class="mut">Multa de rescisão</span><span id="cRes"></span></div>
+    </div>
+    <div class="card">
+      <h2>Calendário da temporada</h2>
+      <div class="legend">
+        <span class="lg"><i class="sq win"></i>Vitória</span>
+        <span class="lg"><i class="sq draw"></i>Empate</span>
+        <span class="lg"><i class="sq loss"></i>Derrota</span>
+        <span class="lg"><i class="ci"></i>Jogo marcado</span>
+        <span class="lg"><i class="dotw"></i>Sem jogo</span>
+      </div>
+      <div id="calendar"></div>
+    </div>
+    <div class="card">
+      <h2>Propostas</h2>
+      <div id="offers"></div>
+      <p class="mut" id="noOffer">Sem propostas no momento. Fama e desempenho atraem clubes.</p>
+    </div>
+    <div class="card">
+      <h2>Tabela da divisão</h2>
+      <div class="log" id="table"></div>
+    </div>
+  </main>
+</section>
+
+<!-- PARTIDA: uma cena só, com popups sobre o campo -->
+<section id="sMatch" class="hidden">
+  <svg class="field" viewBox="0 0 300 180" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <rect x="0" y="0" width="300" height="180" fill="#1f7a3a"/>
+    <g fill="#185f2d" opacity=".55">
+      <rect x="0" y="0" width="25" height="180"/><rect x="50" y="0" width="25" height="180"/><rect x="100" y="0" width="25" height="180"/>
+      <rect x="150" y="0" width="25" height="180"/><rect x="200" y="0" width="25" height="180"/><rect x="250" y="0" width="25" height="180"/>
+    </g>
+    <rect x="6" y="6" width="288" height="168" fill="none" stroke="#ffffffaa" stroke-width="2"/>
+    <line x1="150" y1="6" x2="150" y2="174" stroke="#ffffffaa" stroke-width="2"/>
+    <circle cx="150" cy="90" r="24" fill="none" stroke="#ffffffaa" stroke-width="2"/>
+    <rect x="6" y="50" width="42" height="80" fill="none" stroke="#ffffffaa" stroke-width="2"/>
+    <rect x="252" y="50" width="42" height="80" fill="none" stroke="#ffffffaa" stroke-width="2"/>
+    <rect x="0" y="72" width="6" height="36" fill="#fff"/>
+    <rect x="294" y="72" width="6" height="36" fill="#fff"/>
+    <g id="players"></g>
+    <g id="ballG" transform="translate(150,90)"><circle r="6" fill="#fff" stroke="#111" stroke-width="1.5"/></g>
+  </svg>
+
+  <div class="hud">
+    <div class="score" id="mScore"></div>
+    <div class="clock" id="playClock"></div>
+    <div class="clock" id="fieldCount"></div>
+  </div>
+
+  <div class="pop center hidden" id="popPre">
+    <h2>Dia de jogo</h2>
+    <p class="mut" style="margin:0 0 8px">Regras: 6 jogadores na linha e goleiro por time. Um jogador entra a cada lance. Dado gigante no meio da partida, carta secreta no segundo tempo, pênalti do presidente, desescalonamento no fim e pênaltis se empatar.</p>
+    <div class="row"><span class="mut">Adversário</span><b id="preOpp"></b></div>
+    <div class="row"><span class="mut">Destaque adversário</span><span id="preStar"></span></div>
+    <div class="row"><span class="mut">Companheiro de destaque</span><span id="preMate"></span></div>
+    <div class="row"><span class="mut">Força</span><span id="preStr"></span></div>
+    <div id="preWarn"></div>
+    <div class="row"><span class="mut">Energia</span><span id="preEn"></span></div>
+    <div class="bar" id="pbEn"><div></div></div>
+    <div class="row"><span class="mut">Moral</span><span id="preMo"></span></div>
+    <div class="bar" id="pbMo"><div></div></div>
+    <h2 style="margin-top:10px">Tática</h2>
+    <div class="grid2" id="preTac"></div>
+    <h2 style="margin-top:10px">Preparação</h2>
+    <div class="grid2">
+      <button class="sec opt" id="btnConc" onclick="togPre('conc')"><b>Concentração</b><small>Moral +4, energia -3</small></button>
+      <button class="sec opt" id="btnWarm" onclick="togPre('warm')"><b>Aquecimento</b><small>Velocidade +2, energia -6</small></button>
+    </div>
+    <button onclick="startPlay()">Entrar em campo</button>
+    <button class="sec" onclick="backHome()">Voltar para a semana</button>
+  </div>
+
+  <div class="pop bottom hidden" id="popPlay">
+    <div id="playPrompt" style="font-size:14px;margin-bottom:8px"></div>
+    <div id="playOpts"></div>
+    <div class="log" id="playLog" style="max-height:80px;margin-top:6px"></div>
+  </div>
+
+  <div class="pop center hidden" id="popHalf">
+    <h2>Intervalo</h2>
+    <p class="mut" id="halfInfo"></p>
+    <div id="halfOpts"></div>
+  </div>
+
+  <div class="pop center hidden" id="popInfo">
+    <h2 id="infoTitle"></h2>
+    <p class="mut" id="infoText"></p>
+    <div id="infoOpts"></div>
+  </div>
+
+  <div class="pop center hidden" id="popEnd">
+    <h2 id="endTitle"></h2>
+    <div id="endGrid"></div>
+    <p class="mut" id="endText"></p>
+    <button onclick="backHome()">Voltar para a semana</button>
+  </div>
+</section>
+
+<nav id="nav" class="hidden">
+  <button data-go="sHome" onclick="show('sHome')">Semana</button>
+  <button data-go="sTrain" onclick="show('sTrain')">Treino</button>
+  <button data-go="sMkt" onclick="show('sMkt')">Marketing</button>
+  <button data-go="sShop" onclick="show('sShop')">Loja</button>
+  <button data-go="sClub" onclick="show('sClub')">Equipe</button>
+  <button data-go="sPers" onclick="show('sPers')">Pessoal</button>
+</nav>
+
+<script>
+// ===== Dados =====
+const DIVS=[
+  {name:"Amadora",need:8,str:3,teams:["Capinzal FC","Dendê FC","Impedidos do Goti","Real Elite Clube","Fluxo Clube"]},
+  {name:"Série B",need:10,str:5,teams:["Funkbal Clube","Fúria Negra","G4X FC","Lord SC","Nivelados FC"]},
+  {name:"Série A",need:12,str:7,teams:["Real Elite Clube","Fluxo Clube","Dendê FC","Impedidos do Goti","Capinzal FC","Funkbal Clube","Fúria Negra"]},
+  {name:"Campeonato da Knights League",need:10,str:9,teams:["Knights Elite","Titãs da Zona","Fênix FC","Lobos Urbanos","Samurais FC","Reis do Asfalto"]},
+];
+const ROSTERS={
+  "Capinzal FC":["Maicom Santana","Gabriel Medeiro","Davi Lyra","Henry Jaba","Kléber Barros","Ian Graça","Vitor Florêncio","André Dizoti"],
+  "Dendê FC":["Rúbio Magalhães","Guilherme Silveira","Tales Vicentino","Gabriel Silveira","Renan Assunção","Matias Tintino","Vini Sousa","Breno Teresinha"],
+  "Impedidos do Goti":["João Pedro Crus","Gabriel Menocci","Marcelo Silveira Jr.","Lucas Donadon","Fernando Silveira","Luiz Felipe Almeidinha","Guilherme Bernardelli","Vitor Ferrero"],
+  "Real Elite Clube":["Matheus Silveira","Marlon Ribeiro","Gustavo Rochinha","João Vitor Fenatti","Andrei Profeta","Gabriel Lisbôa","Eduardo Andrez","Isaque Sanders"],
+  "Fluxo Clube":["Vinícius Almeida (Melequeira)","Vini Alexandrino","Vitor Martinez (VM)","Gabriel de Sousa (Intero)","Caio Sanches","Julio Cesar Carvalhal","Sérgio Filhão","Murilo Menetti"],
+  "Funkbal Clube":["Douglas Gurgueira","Luiz Paolo","Jhonatan Goes (Mlk Joe)","Thiago Nascimentos","Flávio Stokunas","Odlanier Madeira","Bruno Maya","Marcelo Silvinha"],
+  "Fúria Negra":["Matheus dos Santo","Vitor Hugo da Silveira","João Pelegrino","Guilherme Monegatti","Gabriel Pastucho","Ryan Limão","Caio Carvalheiro","Murilo Donatto"],
+  "G4X FC":["Wembley Luís","Kenu Gonçalvez","Vitor Sampaulo","Igor Rezendes","Luiz Galindo Netto","Felipe Cassiani","Nikolas Olivera","Lucas Silvano"],
+  "Lord SC":["Lucas Henriquez","Higor da Costella","Lucas Japinha","Júlio César Rodrigão","Josué dos Santo","Matheus Lisbona","Kelvis Nunez","Nathan Lúcio"],
+  "Nivelados FC":["Ivo Alvez","Breno Aranha","Bruno dos Santana","Matheus Nerez","Gustavo Simão","Nicolas Barutto","Caio Garcio","Bruno Mendez"],
+  "Knights Elite":["Rafa Tavares","Bruno Lima","Caio Mendonça","Pedro Gomes","Erick Duarte"],
+};
+const DEFAULT_MATES=["Rafa Tavares","Bruno Lima","Caio Mendonça","Pedro Gomes","Erick Duarte"];
+const ATTRS=[["fin","Finalização"],["pas","Passe"],["dri","Drible"],["vel","Velocidade"],["res","Resistência"],["vis","Visão"],["mar","Marcação"]];
+const attrName=k=>ATTRS.find(a=>a[0]===k)[1];
+const POS={goleiro:"Goleiro",fixo:"Fixo",ala:"Ala",pivo:"Pivô"};
+const TRAITS={craque:{n:"Craque de rua"},disciplinado:{n:"Disciplinado"},pavio:{n:"Pavio curto"}};
+const TRAINS={
+  fin:{n:"Finalização",stat:"fin",e:18,inj:3,desc:"Chutes de perto e de longe"},
+  pas:{n:"Passe",stat:"pas",e:12,inj:1,desc:"Tabelas e lançamentos"},
+  dri:{n:"Drible",stat:"dri",e:16,inj:2,desc:"Dribles e controle de bola"},
+  fis:{n:"Físico",stat:"res",e:24,inj:6,extra:"vel",desc:"Resistência e velocidade"},
+  tat:{n:"Tático",stat:"vis",e:10,inj:0,extra:"mar",desc:"Visão de jogo e marcação"},
+};
+const MKT=[
+  {n:"Post de treino",fans:[10,30],fame:0,e:8,m:3,d:"Vídeo simples de treino"},
+  {n:"Entrevista na rádio",fans:[5,15],fame:2,e:6,m:4,d:"Mais fama, menos seguidores"},
+  {n:"Live com a torcida",fans:[30,70],fame:1,e:12,m:5,d:"Grande alcance, muito cansativo"},
+];
+const CONS=[
+  {id:"isot",n:"Bebida isotônica",p:60,e:15,m:0,d:"+15 de energia"},
+  {id:"supl",n:"Suplemento",p:150,e:40,m:0,d:"+40 de energia"},
+  {id:"mass",n:"Massagem",p:200,e:25,m:12,d:"+25 de energia e +12 de moral"},
+  {id:"fisio",n:"Fisioterapia",p:400,heal:1,e:0,m:0,d:"Cura a lesão na hora"},
+];
+const EQUIP=[
+  {id:"chut",n:"Chuteira de campo",p:1200,b:{fin:1,vel:1},d:"Finalização +1, velocidade +1"},
+  {id:"luva",n:"Luvas de goleiro",p:900,b:{mar:1,vis:1},d:"Marcação +1, visão +1"},
+  {id:"camisa",n:"Camisa térmica",p:800,b:{res:1},d:"Resistência +1"},
+  {id:"cane",n:"Caneleira de carbono",p:600,b:{mar:1},d:"Marcação +1"},
+  {id:"bola",n:"Bola de treino pessoal",p:500,b:{pas:1,dri:1},d:"Passe +1, drible +1"},
+];
+const SPONSORS=[
+  {n:"Energético Trovão",min:20,pay:150,d:"Fama 20 ou mais"},
+  {n:"Chuteiras Vortex",min:35,pay:350,d:"Fama 35 ou mais"},
+  {n:"Canal de streaming Arena",min:60,pay:700,d:"Fama 60 ou mais"},
+];
+const ACH=[
+  {n:"Primeiro gol",ok:p=>p.stats.g>=1},
+  {n:"Hat-trick: 3 gols em uma partida",ok:p=>(p.maxGoals||0)>=3},
+  {n:"10 jogos disputados",ok:p=>p.stats.gp>=10},
+  {n:"50 jogos disputados",ok:p=>p.stats.gp>=50},
+  {n:"5 vitórias",ok:p=>p.stats.w>=5},
+  {n:"25 vitórias",ok:p=>p.stats.w>=25},
+  {n:"20 gols na carreira",ok:p=>p.stats.g>=20},
+  {n:"20 assistências na carreira",ok:p=>p.stats.a>=20},
+  {n:"Fama 50",ok:p=>p.fame>=50},
+  {n:"Fama 80",ok:p=>p.fame>=80},
+  {n:"Primeira promoção",ok:p=>(p.trophies||[]).some(t=>t.n.startsWith("Acesso"))},
+  {n:"Primeiro título",ok:p=>(p.trophies||[]).some(t=>t.n.startsWith("Campeão"))},
+  {n:"Equipar 3 itens",ok:p=>Object.keys(p.owned||{}).length>=3},
+  {n:"Patrimônio de R$ 10.000",ok:p=>p.money>=10000},
+];
+const TACTICS={
+  pressao:{n:"Pressão alta",d:"Ataque +2, defesa -1, gasta mais energia",atk:2,def:-1,eg:1,vel:0},
+  equilibrio:{n:"Equilibrado",d:"Sem ajustes",atk:0,def:0,eg:0,vel:0},
+  retranca:{n:"Retranca",d:"Defesa +2, ataque -1",atk:-1,def:2,eg:0,vel:0},
+  contra:{n:"Contra-ataque",d:"Velocidade +2 nas corridas, defesa -1",atk:1,def:-1,eg:0,vel:2},
+};
+const HALF=[
+  {id:"int",n:"Intensidade total",d:"Ataque +1, energia -5, moral +2"},
+  {id:"fech",n:"Fechar a defesa",d:"Defesa +2 no segundo tempo"},
+  {id:"contra",n:"Explorar o contra-ataque",d:"Ataque +1 e velocidade +2"},
+];
+const ATK_SITS=[
+  {t:"Você recebe a bola de frente para o gol.",o:[{l:"Chutar forte",s:"fin",k:"chute"},{l:"Tocar para o ala",s:"pas",k:"passe"},{l:"Driblar o marcador",s:"dri",k:"drible"}]},
+  {t:"Espaço na ponta! Contra-ataque rápido.",o:[{l:"Correr em velocidade",s:"vel",k:"corrida"},{l:"Lançar em profundidade",s:"vis",k:"lance"},{l:"Segurar e organizar",s:"res",k:"organiza"}]},
+  {t:"A zaga adversária recuou. Espaço no meio.",o:[{l:"Infiltrar pelo meio",s:"vel",k:"corrida"},{l:"Passe em profundidade",s:"pas",k:"lance"},{l:"Chute de fora da área",s:"fin",k:"chute"}]},
+  {t:"Passe em profundidade: {mate} dispara nas costas da defesa e pede a bola.",o:[{l:"Correr atrás da bola",s:"vel",k:"disparo"},{l:"Esperar e cruzar",s:"pas",k:"passe"},{l:"Controlar e chutar",s:"fin",k:"chute"}]},
+  {t:"Companheiro livre: {mate} está melhor posicionado que você.",o:[{l:"Tocar para {mate}",s:"pas",k:"passe"},{l:"Resolver sozinho",s:"dri",k:"drible"}]},
+  {t:"Cruzamento na área: {mate} levanta a bola pelo alto.",o:[{l:"Finalizar de cabeça",s:"fin",k:"cabeca"},{l:"Dominar e girar",s:"dri",k:"domina"}]},
+  {t:"Rebote do goleiro: a bola sobra e {mate} chega junto.",o:[{l:"Aproveitar o rebote",s:"fin",k:"rebote"},{l:"Esperar a sobra",s:"vis",k:"organiza"}]},
+  {t:"Passe errado do adversário: você intercepta a bola.",o:[{l:"Partir em contra-ataque",s:"vel",k:"contra"},{l:"Tocar para o ala livre",s:"pas",k:"passe"},{l:"Chutar de primeira",s:"fin",k:"chute"}]},
+  {t:"Contra-ataque perigoso: seu time recupera a bola com poucos defensores atrás.",o:[{l:"Conduzir pelo meio",s:"dri",k:"drible"},{l:"Lançar {mate}",s:"vis",k:"lance"},{l:"Acelerar sozinho",s:"vel",k:"contra"}]},
+];
+const DEF_SITS=[
+  {t:"{star} avança com a bola na sua intermediária.",o:[{l:"Marcar a jogada",s:"mar",k:"defesa"},{l:"Tentar o desarme",s:"dri",k:"roubo"},{l:"Recuar a linha",s:"vis",k:"recuo"}]},
+  {t:"Chute de {star} vindo de longe!",o:[{l:"Bloquear com o corpo",s:"mar",k:"defesa"},{l:"Ficar na posição",s:"res",k:"recuo"}]},
+  {t:"Bola longa para {star}, cara a cara!",o:[{l:"Correr e cortar",s:"vel",k:"corrida"},{l:"Esperar e marcar",s:"mar",k:"defesa"}]},
+];
+const GK_SITS=[
+  {t:"Chute cruzado de {star}! Para onde você vai?",o:[{l:"Espalmar",s:"mar",k:"defesa"},{l:"Sair do gol",s:"vel",k:"saida"}]},
+  {t:"Você pega a bola. Como sair jogando para {mate}?",o:[{l:"Lançar para {mate}",s:"pas",k:"passe"},{l:"Driblar a pressão",s:"dri",k:"drible"}]},
+  {t:"Pênalti! {star} cobra seco no canto.",o:[{l:"Pular no canto",s:"vel",k:"saida"},{l:"Ficar no meio",s:"vis",k:"defesa"}]},
+];
+const OUT={
+  chute:[{t:"Chute para fora. Desperdício.",b:80},{t:"O goleiro espalma o chute para escanteio.",b:90},{t:"Chute forte, quase entra!",b:92},{t:"GOL! Chute cruzado no canto!",b:97,goal:1}],
+  passe:[{t:"Passe interceptado. A posse se perde.",b:40,lose:1},{t:"Passe travado, a jogada esfria.",b:55},{t:"Passe certo, o time mantém a posse.",b:65},{t:"Passe perfeito! Companheiro na cara do gol.",b:80,assist:1}],
+  drible:[{t:"Perdeu a bola na dividida.",b:35,lose:1,foul:1},{t:"Driblou, mas a bola sobrou.",b:55},{t:"Drible passa e você segue em frente.",b:70},{t:"Drible de craque, deixa o marcador para trás!",b:78}],
+  corrida:[{t:"Tropeçou e sentiu a coxa.",b:45,lose:1,inj:1},{t:"Sem fôlego, a jogada morre.",b:50},{t:"Corrida acompanhada de perto.",b:65},{t:"Arranque imparável até a linha de fundo!",b:85}],
+  lance:[{t:"Lançamento errado, a bola sai pela linha.",b:40,lose:1},{t:"Lançamento sem perigo.",b:55},{t:"Lançamento preciso, bola na área.",b:80},{t:"Lançamento milimétrico! Gol de cabeça.",b:95,goal:1,assist:1}],
+  organiza:[{t:"Organizou mal e o adversário pressiona.",b:30,lose:1},{t:"Circulação lenta, mas segura.",b:50},{t:"Você organiza o ataque com calma.",b:60},{t:"Você ganha a bola e comanda o ataque!",b:70}],
+  defesa:[{t:"Falha na marcação! Adversário fica de cara com o gol.",b:15,oppGoal:1,danger:1},{t:"Adversário passa pela marcação, mas erra a finalização.",b:45,danger:1},{t:"Defesa segura, a bola volta ao meio.",b:50},{t:"Corte perfeito, o ataque é neutralizado!",b:50}],
+  roubo:[{t:"Falta dura! Cartão amarelo.",b:50,yellow:1,foul:1},{t:"Falta leve, sem perigo.",b:50},{t:"Roubo parcial, bola disputada.",b:55},{t:"Desarme limpo e contra-ataque!",b:80}],
+  recuo:[{t:"Recuo errado, o adversário fica livre.",b:15,danger:1},{t:"Recuo lento, o adversário chega.",b:35,danger:1},{t:"Recuo bem feito, o time se reorganiza.",b:50},{t:"Bola segura com o goleiro. Jogada limpa.",b:50}],
+  cabeca:[{t:"Cabeçada para fora.",b:75},{t:"Cabeçada no goleiro, que defende.",b:90},{t:"Cabeçada forte, quase entra!",b:93},{t:"GOL de cabeça! Cruzamento perfeito.",b:97,goal:1}],
+  domina:[{t:"Domínio ruim, a bola escapa.",b:45,lose:1},{t:"Dominou, mas perdeu o ângulo.",b:60},{t:"Dominou e girou com espaço.",b:75},{t:"Domínio perfeito e finalização certeira!",b:95,goal:1}],
+  rebote:[{t:"Chegou atrasado, o goleiro segura.",b:50},{t:"Chute de primeira na trave.",b:85},{t:"Sobra limpa, mas o chute sai fraco.",b:60},{t:"GOL no rebote! Estava no lugar certo.",b:96,goal:1}],
+  disparo:[{t:"Perdeu a corrida para o zagueiro.",b:40,lose:1},{t:"Chegou na bola, mas sem espaço.",b:55},{t:"Chegou antes do goleiro e cruzou.",b:75},{t:"Disparo perfeito: você fica cara a cara com o goleiro!",b:88}],
+  contra:[{t:"Contra-ataque travado, a defesa recua.",b:40,lose:1},{t:"Contra-ataque sem finalização.",b:55},{t:"Contra-ataque bem conduzido, o time avança.",b:75},{t:"Contra-ataque fulminante: você chuta sozinho e marca!",b:96,goal:1}],
+  saida:[{t:"Erro de posicionamento! Gol adversário.",b:12,oppGoal:1,danger:1},{t:"Chegou atrasado, sem chance.",b:20,danger:1},{t:"Defesa parcial, mas garantiu a bola.",b:50},{t:"Saída perfeita, a bola está limpa!",b:55}],
+};
+const RATE=[-1,0,1,2];
+const ATK_KINDS=["chute","passe","drible","corrida","lance","organiza","cabeca","domina","rebote","disparo","contra"];
+
+// ===== Estado =====
+let S=null, M=null, ATTR_POINTS={fin:0,pas:0,dri:0,vel:0,res:0,vis:0,mar:0}, POINTS=12;
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const pick=arr=>arr[rnd(0,arr.length-1)];
+const fmt=v=>"R$ "+Math.round(v).toLocaleString("pt-BR");
+const SAVE="knights_league_v6";
+function save(){ try{ localStorage.setItem(SAVE,JSON.stringify(S)); }catch(e){} }
+function load(){ try{ return JSON.parse(localStorage.getItem(SAVE)); }catch(e){ return null; } }
+function toast(m){ const t=$("toast"); t.textContent=m; t.style.display="block"; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display="none",2200); }
+function bar(id,v,warnAt=40,badAt=20){
+  const el=$(id); el.firstElementChild.style.width=clamp(v,0,100)+"%";
+  el.classList.remove("warn","bad"); if(v<badAt) el.classList.add("bad"); else if(v<warnAt) el.classList.add("warn");
+}
+function dots(n,max=10){ let h=""; for(let i=0;i<max;i++) h+=`<span class="dot ${i<n?"on":""}"></span>`; return h; }
+function note(m){ S.p.news.unshift(m); if(S.p.news.length>40) S.p.news.length=40; toast(m); }
+function eff(k){
+  const p=S.p; let v=p.a[k];
+  for(const id in p.owned){ const e=EQUIP.find(x=>x.id===id); if(e&&e.b[k]) v+=e.b[k]; }
+  return v;
+}
+function mates(){ return ROSTERS[S.p.club]||DEFAULT_MATES; }
+
+function newPlayer(name,pos,trait,extra,age){
+  const a={fin:3,pas:3,dri:3,vel:3,res:3,vis:3,mar:3};
+  for(const k in extra) a[k]+=extra[k];
+  return {name,pos,trait,age,a,energy:100,moral:60,fame:5,fans:120,xp:0,lvl:1,pts:0,
+    div:0,round:1,season:1,seasonStart:1,weekN:1,week:{tr:0,mk:0,rested:false},injury:0,
+    club:DIVS[0].teams[0],contract:{sal:500,bonus:50,res:3000},money:1200,
+    stats:{gp:0,g:0,a:0,w:0},maxGoals:0,trophies:[],offers:[],ovr:0,sched:[],hist:[],
+    inv:{},owned:{},shirt:"#4aa3ff",
+    news:["Sua carreira começou na Amadora. Mostre serviço!"]};
+}
+function calcOvr(p){
+  const w={
+    ala:{fin:.2,dri:.2,vel:.15,pas:.15,res:.1,vis:.1,mar:.1},
+    fixo:{mar:.25,res:.2,vis:.2,pas:.15,vel:.1,fin:.05,dri:.05},
+    pivo:{fin:.3,pas:.15,vis:.15,vel:.1,res:.1,dri:.1,mar:.1},
+    goleiro:{vis:.3,res:.2,vel:.2,mar:.3,fin:0,dri:0,pas:0},
+  }[p.pos];
+  let s=0; for(const k in w) s+=eff(k)*w[k];
+  return clamp(Math.round(s*10),10,99);
+}
+
+// ===== Calendário de jogos =====
+function rivals(){ const p=S.p; return DIVS[p.div].teams.filter(t=>t!==p.club); }
+function addGame(){
+  const p=S.p;
+  const last=p.sched.length?p.sched[p.sched.length-1].week:p.weekN-1;
+  const w=Math.max(last+rnd(1,2),p.weekN);
+  p.sched.push({week:w,opp:pick(rivals())});
+}
+function fillSched(){ while(S.p.sched.length<3) addGame(); }
+function refreshOpps(){ S.p.sched.forEach(g=>g.opp=pick(rivals())); }
+function gameThisWeek(){ const g=S.p.sched[0]; return g && g.week===S.p.weekN ? g : null; }
+
+// ===== Telas =====
+const SCREENS=["sMenu","sHelp","sNew","sHome","sTrain","sMkt","sShop","sPers","sClub","sMatch"];
+const GAME=["sHome","sTrain","sMkt","sShop","sPers","sClub"];
+function show(id){
+  SCREENS.forEach(s=>$(s).classList.toggle("hidden",s!==id));
+  $("top").classList.toggle("hidden",!GAME.includes(id));
+  $("nav").classList.toggle("hidden",!GAME.includes(id));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.go===id));
+  if(id==="sMenu") $("btnCont").disabled=!S;
+  if(S && GAME.includes(id)) renderAll();
+  window.scrollTo(0,0);
+}
+function renderAll(){ renderTop(); renderHome(); renderTrain(); renderMkt(); renderShop(); renderPers(); renderClub(); }
+function renderTop(){
+  const p=S.p, div=DIVS[p.div];
+  $("hdr").textContent=`${div.name} · Jogo ${p.round}/${div.need} · Temp. ${p.season}`;
+  $("money").textContent=fmt(p.money);
+}
+function renderHome(){
+  const p=S.p; p.ovr=calcOvr(p);
+  const g=gameThisWeek();
+  $("pBadge").textContent=p.ovr;
+  $("pName").textContent=p.name;
+  $("pInfo").textContent=`${POS[p.pos]} · ${p.club} · ${TRAITS[p.trait].n}`;
+  $("pEn").textContent=Math.round(p.energy)+"%";
+  $("pMo").textContent=Math.round(p.moral)+"%";
+  $("pFa").textContent=p.fame+" · "+p.fans+" seguidores";
+  bar("bEn",p.energy); bar("bMo",p.moral,40,25); bar("bFa",p.fame,30,10);
+  $("wkInfo").textContent=CHAPTERS[p.div];
+  let txt;
+  if(g && p.injury>0) txt=`Jogo contra ${g.opp} nesta semana, mas você está lesionado. Descansar agora dá derrota por W.O.`;
+  else if(g && p.week.rested) txt=`Descanso feito. Jogo contra ${g.opp} liberado. A semana termina depois da partida.`;
+  else if(g) txt=`Jogo contra ${g.opp} nesta semana. Treine, faça marketing e descanse para liberar a partida.`;
+  else txt="Sem jogo nesta semana. Descansar encerra a semana.";
+  $("wkText").textContent=txt;
+  $("wkLimits").innerHTML=`<span class="tag">Treinos ${p.week.tr}/2</span><span class="tag">Marketing ${p.week.mk}/1</span>`+(p.injury>0?`<span class="tag">Lesionado: ${p.injury} semana(s)</span>`:"");
+  $("btnTrain").disabled=p.injury>0||p.week.tr>=2||p.week.rested;
+  $("btnMkt").disabled=p.week.mk>=1||p.week.rested;
+  $("btnRest").disabled=p.week.rested;
+  $("btnRest").textContent=g?"Descansar antes do jogo":"Descansar (encerra a semana)";
+  $("dayBox").classList.toggle("hidden",!(g && p.week.rested && p.injury===0));
+  renderEvent();
+  $("news").innerHTML=p.news.slice(0,15).map(n=>`<p>${n}</p>`).join("");
+  $("upcoming").innerHTML=p.sched.slice(0,3).map(x=>{
+    const left=x.week-p.weekN;
+    return `<div class="row"><span>Semana ${x.week} · ${x.opp}</span><span class="tag">${left<=0?"Esta semana":`Em ${left} semana${left>1?"s":""}`}</span></div>`;
+  }).join("");
+}
+function renderTrain(){
+  const p=S.p;
+  $("trLimit").textContent=`Treinos esta semana: ${p.week.tr}/2 · Energia ${Math.round(p.energy)}%`+(p.injury>0?" · Lesionado: não pode treinar":"");
+  $("trList").innerHTML=Object.entries(TRAINS).map(([k,t])=>{
+    const dis=p.injury>0||p.week.tr>=2||p.energy<t.e||p.week.rested;
+    return `<button class="sec opt" ${dis?"disabled":""} onclick="doTrain('${k}')"><b>${t.n}</b><small>${t.desc} · custo ${t.e} de energia · risco de lesão ${t.inj}%</small></button>`;
+  }).join("");
+  $("pts").textContent=p.pts;
+  $("xpInfo").textContent=`XP ${p.xp}/50 · Nível ${p.lvl}`;
+  $("attrList").innerHTML=ATTRS.map(([k,n])=>{
+    const bonus=eff(k)-p.a[k];
+    return `<div class="row"><span>${n}</span><span><b>${eff(k)}</b>${bonus?`<span class="mut"> (+${bonus})</span>`:""}<button class="sec small" ${p.pts<=0||p.a[k]>=20?"disabled":""} onclick="upAttr('${k}')">+</button></span></div>`;
+  }).join("");
+}
+function renderMkt(){
+  const p=S.p;
+  $("mkList").innerHTML=MKT.map((m,i)=>{
+    const dis=p.week.mk>=1||p.energy<m.e||p.week.rested;
+    return `<button class="sec opt" ${dis?"disabled":""} onclick="doMkt(${i})"><b>${m.n}</b><small>${m.d} · energia -${m.e} · moral -${m.m}</small></button>`;
+  }).join("")+`<p class="mut">Ações de marketing nesta semana: ${p.week.mk}/1</p>`;
+}
+function renderShop(){
+  const p=S.p;
+  $("shopMoney").textContent=fmt(p.money);
+  $("shopCons").innerHTML=CONS.map(c=>{
+    const n=p.inv[c.id]||0;
+    return `<div class="item"><div class="row"><b>${c.n}</b><span class="tag">Tem ${n}</span></div>
+      <div class="mut">${c.d} · ${fmt(c.p)}</div>
+      <div class="grid2"><button onclick="buyCons('${c.id}')" ${p.money<c.p?"disabled":""}>Comprar</button>
+      <button class="sec" onclick="useCons('${c.id}')" ${n<=0?"disabled":""}>Usar</button></div></div>`;
+  }).join("");
+  $("shopEquip").innerHTML=EQUIP.map(e=>{
+    const own=!!p.owned[e.id];
+    return `<div class="item"><div class="row"><b>${e.n}</b>${own?'<span class="tag">Comprado</span>':""}</div>
+      <div class="mut">${e.d} · ${fmt(e.p)}</div>
+      <button onclick="buyEquip('${e.id}')" ${own||p.money<e.p?"disabled":""}>${own?"Já possui":"Comprar"}</button></div>`;
+  }).join("");
+}
+function buyCons(id){
+  const p=S.p, c=CONS.find(x=>x.id===id);
+  if(p.money<c.p) return toast("Dinheiro insuficiente.");
+  p.money-=c.p; p.inv[id]=(p.inv[id]||0)+1;
+  note(`Você comprou ${c.n}.`); save(); renderAll();
+}
+function useCons(id){
+  const p=S.p, c=CONS.find(x=>x.id===id);
+  if(!p.inv[id]) return;
+  if(c.heal){
+    if(p.injury===0) return toast("Você não está lesionado.");
+    p.injury=0; note("Fisioterapia: lesão curada.");
+  } else {
+    p.energy=clamp(p.energy+c.e,0,100); p.moral=clamp(p.moral+c.m,0,100);
+    note(`Você usou ${c.n}.`);
+  }
+  p.inv[id]--; save(); renderAll();
+}
+function buyEquip(id){
+  const p=S.p, e=EQUIP.find(x=>x.id===id);
+  if(p.owned[id]) return;
+  if(p.money<e.p) return toast("Dinheiro insuficiente.");
+  p.money-=e.p; p.owned[id]=true;
+  note(`Você comprou ${e.n}.`); save(); renderAll();
+}
+function sponsorIncome(){ return SPONSORS.filter(s=>S.p.fame>=s.min).reduce((a,s)=>a+s.pay,0); }
+function trophyCup(){
+  return `<svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
+    <path d="M10 6 H30 V16 Q30 27 20 27 Q10 27 10 16 Z" fill="#f5b400"/>
+    <rect x="17" y="27" width="6" height="5" fill="#f5b400"/>
+    <rect x="11" y="32" width="18" height="4" rx="1" fill="#f5b400"/>
+    <rect x="4" y="8" width="5" height="8" fill="none" stroke="#f5b400" stroke-width="2"/>
+    <rect x="31" y="8" width="5" height="8" fill="none" stroke="#f5b400" stroke-width="2"/>
+  </svg>`;
+}
+function renderPers(){
+  const p=S.p, div=DIVS[p.div];
+  $("iOvr").textContent=calcOvr(p);
+  $("iName").textContent=p.name;
+  $("iPos").textContent=POS[p.pos];
+  $("iClub").textContent=p.club;
+  $("iLvl").textContent=p.lvl;
+  $("iTrait").textContent=TRAITS[p.trait].n;
+  $("iAge").textContent=p.age+" anos";
+  $("pStats").innerHTML=[
+    ["Divisão",div.name],["Jogos",p.stats.gp],["Vitórias",p.stats.w],["Gols",p.stats.g],["Assistências",p.stats.a],
+    ["Maior número de gols em uma partida",p.maxGoals||0],["Fama",p.fame],["Seguidores",p.fans],["Renda de patrocínio por semana",fmt(sponsorIncome())]
+  ].map(([a,b])=>`<div class="stat"><span class="mut">${a}</span><b>${b}</b></div>`).join("");
+  $("pSponsors").innerHTML=SPONSORS.map(s=>{
+    const on=p.fame>=s.min;
+    return `<div class="row"><span>${s.n}</span><span class="tag">${on?fmt(s.pay)+" por semana":s.d}</span></div>`;
+  }).join("");
+  const done=ACH.filter(a=>a.ok(p)).length;
+  $("pAch").innerHTML=`<p class="mut">${done} de ${ACH.length} conquistas</p>`+ACH.map(a=>{
+    const ok=a.ok(p);
+    return `<div class="ach"><span><i class="mark" style="background:${ok?"#3ecf8e":"#2a313c"}"></i>${a.n}</span><span class="${ok?"good":"mut"}">${ok?"Conquistado":"Pendente"}</span></div>`;
+  }).join("");
+  const tr=p.trophies||[];
+  $("trophyRoom").innerHTML=tr.length
+    ?`<div class="trophies">${tr.map(t=>`<div class="trophy">${trophyCup()}<b>${t.n}</b><span class="mut">Temporada ${t.season} · ${t.age} anos</span></div>`).join("")}</div>`
+    :`<p class="mut">Nenhum troféu ainda. Conquiste acessos e títulos para encher a sala.</p>`;
+  $("retireBox").classList.toggle("hidden",p.age<30);
+}
+function retire(){
+  const p=S.p;
+  if(!confirm(`Aposentar aos ${p.age} anos com ${(p.trophies||[]).length} troféu(s)? A carreira termina.`)) return;
+  S=null; try{ localStorage.removeItem(SAVE); }catch(e){}
+  toast(`${p.name} se aposentou aos ${p.age} anos. Comece uma nova carreira quando quiser.`);
+  show("sMenu");
+}
+function renderCalendar(){
+  const p=S.p;
+  const start=p.seasonStart||1;
+  const last=p.sched.length?p.sched[p.sched.length-1].week:p.weekN;
+  const end=Math.max(last,p.weekN);
+  const byWeek={}; p.hist.filter(h=>h.season===p.season).forEach(h=>byWeek[h.week]=h);
+  const schedBy={}; p.sched.forEach(g=>schedBy[g.week]=g);
+  let html="";
+  for(let w=start; w<=end; w++){
+    const h=byWeek[w], g=schedBy[w];
+    let shape, lbl="";
+    if(h){
+      const c=h.my>h.op?"win":h.my===h.op?"draw":"loss";
+      shape=`<i class="sq ${c}"></i>`; lbl=h.wo?"W.O.":`${h.my}x${h.op}`;
+    } else if(g){
+      shape=`<i class="ci"></i>`; lbl=g.week===p.weekN?"hoje":"";
+    } else shape=`<i class="dotw"></i>`;
+    html+=`<div class="cell ${w===p.weekN?"now":""}"><span class="sub">S${w}</span>${shape}<span class="sub">${lbl}</span></div>`;
+  }
+  $("calendar").innerHTML=`<div class="grid">${html}</div>`;
+}
+function renderClub(){
+  const p=S.p;
+  if(!S.table) S.table=buildTable();
+  $("cClub").textContent=p.club;
+  $("cSal").textContent=fmt(p.contract.sal)+" /mês";
+  $("cBon").textContent=fmt(p.contract.bonus)+" /gol";
+  $("cRes").textContent=fmt(p.contract.res);
+  renderCalendar();
+  $("offers").innerHTML=p.offers.map((o,i)=>`
+    <div class="card" style="margin:8px 0">
+      <div class="row"><b>${o.club}</b><span class="tag">${o.div}</span></div>
+      <div class="mut">Salário ${fmt(o.sal)}/mês · Bônus ${fmt(o.bonus)}/gol · Multa ${fmt(o.res)}</div>
+      <div class="grid2"><button onclick="acceptOffer(${i})">Aceitar (taxa ${fmt(o.res/3)})</button><button class="sec" onclick="rejectOffer(${i})">Recusar</button></div>
+    </div>`).join("");
+  $("noOffer").classList.toggle("hidden",p.offers.length>0);
+  const t=S.table.slice().sort((a,b)=>b.pts-a.pts||(b.gp-b.gc)-(a.gp-a.gc));
+  $("table").innerHTML=`<div class="row mut"><span>Time</span><span>J V E D Pts</span></div>`+t.map((x,i)=>
+    `<div class="row"><span>${i+1}. ${x.name}</span><span>${x.j} ${x.v} ${x.e} ${x.d} <b>${x.pts}</b></span></div>`).join("");
+}
+
+// ===== Menu e criação =====
+function newGame(){
+  S=null; ATTR_POINTS={fin:0,pas:0,dri:0,vel:0,res:0,vis:0,mar:0}; POINTS=12;
+  renderCreate(); show("sNew");
+}
+function continueGame(){ if(S) show("sHome"); }
+function goMenu(){ save(); show("sMenu"); }
+function renderCreate(){
+  $("cAttrs").innerHTML=`<p class="mut">Pontos restantes: <b>${POINTS}</b></p>`+ATTRS.map(([k,n])=>`
+    <div class="row"><span>${n}</span><span>
+      <button class="sec small" onclick="cAdj('${k}',-1)">-</button>
+      <b style="margin:0 8px">${3+ATTR_POINTS[k]}</b>
+      <button class="sec small" onclick="cAdj('${k}',1)">+</button></span></div>`).join("");
+}
+function cAdj(k,d){
+  if(d>0&&POINTS<=0) return;
+  if(d>0&&3+ATTR_POINTS[k]>=10) return;
+  if(d<0&&ATTR_POINTS[k]<=0) return;
+  ATTR_POINTS[k]+=d; POINTS-=d; renderCreate();
+}
+function startCareer(){
+  const name=$("cName").value.trim()||"Jogador";
+  const age=clamp(parseInt($("cAge").value,10)||18,16,30);
+  S={p:newPlayer(name,$("cPos").value,$("cTrait").value,ATTR_POINTS,age)};
+  S.table=null; fillSched(); save(); show("sHome");
+}
+
+// ===== Semana =====
+function endWeek(){
+  const p=S.p;
+  p.week={tr:0,mk:0,rested:false}; p.weekN++;
+  if(p.trait==="disciplinado") p.moral=clamp(p.moral+1,0,100);
+  const inc=sponsorIncome();
+  if(inc>0){ p.money+=inc; }
+  rollEvent();
+}
+function doTrain(k){
+  const p=S.p, t=TRAINS[k];
+  if(p.week.rested) return toast("Você já descansou nesta semana.");
+  if(p.injury>0) return toast("Você está lesionado.");
+  if(p.week.tr>=2) return toast("Limite de 2 treinos por semana atingido.");
+  if(p.energy<t.e) return toast("Energia insuficiente para este treino.");
+  p.week.tr++; p.energy=clamp(p.energy-t.e,0,100);
+  let chance=clamp(0.7-(eff(t.stat)-8)*0.04,0.25,0.85);
+  if(p.trait==="disciplinado") chance+=0.1;
+  if(p.age<=21) chance+=0.05;
+  if(p.age>=28) chance-=0.05;
+  if(Math.random()<chance && p.a[t.stat]<20){ p.a[t.stat]++; note(`Treino de ${t.n}: ${attrName(t.stat)} subiu para ${p.a[t.stat]}.`); }
+  else note(`Treino de ${t.n} sem evolução.`);
+  if(t.extra && Math.random()<0.3 && p.a[t.extra]<20){ p.a[t.extra]++; note(`Treino físico: ${attrName(t.extra)} subiu para ${p.a[t.extra]}.`); }
+  if(Math.random()<t.inj/100){ p.injury=rnd(1,2); note("Lesão no treino! Descanse para recuperar."); }
+  save(); renderAll();
+}
+function doMkt(i){
+  const p=S.p, m=MKT[i];
+  if(p.week.rested) return toast("Você já descansou nesta semana.");
+  if(p.week.mk>=1) return toast("Limite de 1 marketing por semana atingido.");
+  if(p.energy<m.e) return toast("Energia insuficiente.");
+  p.week.mk++; p.energy=clamp(p.energy-m.e,0,100); p.moral=clamp(p.moral-m.m,0,100);
+  const g=rnd(m.fans[0],m.fans[1]); p.fans+=g; p.fame=clamp(p.fame+m.fame,0,100);
+  note(`${m.n}: +${g} seguidores. Moral e energia caíram.`);
+  save(); renderAll();
+}
+function doRest(){
+  const p=S.p; if(p.week.rested) return;
+  const g=gameThisWeek();
+  const wasInj=p.injury>0;
+  p.energy=clamp(p.energy+30,0,100); p.moral=clamp(p.moral-5,0,100);
+  if(p.injury>0){ p.injury--; if(p.injury===0) note("Você se recuperou da lesão."); }
+  if(g && wasInj){ forfeit(g); return; }
+  if(g){
+    p.week.rested=true;
+    note(`Descanso feito. Jogo contra ${g.opp} liberado.`);
+    save(); renderAll(); return;
+  }
+  note("Você descansou a semana.");
+  endWeek(); save(); renderAll();
+}
+function forfeit(g){
+  const p=S.p;
+  p.moral=clamp(p.moral-8,0,100);
+  p.hist.push({season:p.season,week:p.weekN,opp:g.opp,my:0,op:3,wo:1});
+  p.round++;
+  p.sched.shift(); fillSched();
+  note(`Sem condições de jogar: derrota por W.O. contra ${g.opp}.`);
+  endWeek();
+  if(p.round>DIVS[p.div].need) checkSeason();
+  save(); renderAll();
+}
+function upAttr(k){
+  const p=S.p; if(p.pts<=0||p.a[k]>=20) return;
+  p.a[k]++; p.pts--; save(); renderAll();
+}
+
+// ===== Narrativa: capítulos e eventos =====
+const CHAPTERS=[
+  "Capítulo 1: O campo do bairro",
+  "Capítulo 2: A chance na Série B",
+  "Capítulo 3: Entre os grandes",
+  "Capítulo 4: A Knights League",
+];
+const EVENTS=[
+  {id:"tv",t:"Entrevista na TV local",d:"Um canal de bairro quer você ao vivo depois do jogo. Como você responde?",o:[
+    {l:"Falar com confiança",e:{fame:3,moral:-2},r:"A entrevista repercutiu. Mais fama, mas você ficou exposto."},
+    {l:"Falar com humildade",e:{fame:1,moral:3},r:"Você agradou o público e a equipe."},
+    {l:"Recusar a entrevista",e:{},r:"Você preferiu descansar. Ninguém comentou."}]},
+  {id:"foto",t:"Torcedor no ônibus",d:"Um torcedor pede foto e conta que assistiu a todos os seus jogos.",o:[
+    {l:"Atender com carinho",e:{fans:20,energy:-5},r:"O encontro virou vídeo. Mais seguidores."},
+    {l:"Pedir um minuto",e:{fans:5},r:"Ele entendeu. O encontro foi curto."}]},
+  {id:"patro",t:"Patrocínio duvidoso",d:"Uma marca de energético oferece R$ 400 para você postar o produto sem explicar nada.",o:[
+    {l:"Aceitar o contrato",e:{money:400,moral:-4},r:"O dinheiro entrou, mas os colegas comentaram."},
+    {l:"Recusar",e:{moral:2},r:"Você manteve sua imagem limpa."}]},
+  {id:"lesao",t:"Colega lesionado",d:"Um companheiro se machucou no treino e está abatido.",o:[
+    {l:"Ajudar na recuperação",e:{moral:5,energy:-10},r:"Ele agradeceu. O vestiário ficou mais unido."},
+    {l:"Focar no seu treino",e:{},r:"Você seguiu sua rotina. O grupo notou."}]},
+  {id:"agente",t:"Agenda cheia",d:"Seu empresário conseguiu três amistosos pagos, mas a semana vai ser pesada.",o:[
+    {l:"Aceitar os amistosos",e:{money:300,energy:-15,fans:30},r:"Amistosos pagos, mas o corpo sentiu."},
+    {l:"Recusar",e:{},r:"Você guardou energia para o campeonato."}]},
+  {id:"viral",t:"Lance viralizou",d:"Um gol seu saiu em todas as redes. Vale repostar?",o:[
+    {l:"Repostar com legenda",e:{fans:50,fame:2},r:"O post cresceu mais do que o esperado."},
+    {l:"Ignorar",e:{},r:"O assunto passou sem que você tocasse nele."}]},
+  {id:"tecnico",t:"Desentendimento com o técnico",d:"O técnico cobrou sua posição em campo, na frente de todos.",o:[
+    {l:"Pedir desculpas",e:{moral:3},r:"Vocês conversaram e o clima melhorou."},
+    {l:"Defender sua posição",e:{fame:2,moral:-4},r:"A torcida gostou, o técnico não."}]},
+  {id:"veterano",t:"Treino com veterano",d:"Um veterano da liga oferece uma sessão de fundamentos depois do treino.",o:[
+    {l:"Aceitar a lição",e:{energy:-15,pts:1},r:"Você aprendeu um fundamento novo: 1 ponto de atributo."},
+    {l:"Recusar",e:{},r:"Você preferiu treinar sozinho."}]},
+];
+function rollEvent(){
+  const p=S.p; if(p.ev) return;
+  if(Math.random()>0.45) return;
+  const recent=(p.evDone||[]).slice(-4);
+  const pool=EVENTS.filter(e=>!recent.includes(e.id));
+  const ev=pick(pool);
+  p.ev=ev.id; p.evDone=[...(p.evDone||[]),ev.id];
+}
+function renderEvent(){
+  const p=S.p, box=$("evBox");
+  const ev=p.ev?EVENTS.find(e=>e.id===p.ev):null;
+  box.classList.toggle("hidden",!ev);
+  if(!ev) return;
+  $("evTitle").textContent=ev.t;
+  $("evText").textContent=ev.d;
+  $("evOpts").innerHTML=ev.o.map((o,i)=>`<button class="sec evopt" onclick="pickEvent(${i})"><b>${o.l}</b></button>`).join("");
+}
+function pickEvent(i){
+  const p=S.p, ev=EVENTS.find(e=>e.id===p.ev); if(!ev) return;
+  const o=ev.o[i];
+  for(const k in o.e){
+    const v=o.e[k];
+    if(k==="pts"){ p.pts+=v; continue; }
+    if(k==="money"||k==="fans") p[k]=Math.max(0,p[k]+v);
+    else p[k]=clamp(p[k]+v,0,100);
+  }
+  note(o.r);
+  p.ev=null; save(); renderAll();
+}
+
+// ===== Tabela e temporada =====
+function buildTable(){ return DIVS[S.p.div].teams.map(name=>({name,j:0,v:0,e:0,d:0,gp:0,gc:0,pts:0})); }
+function updateTable(win,draw){
+  if(!S.table) S.table=buildTable();
+  const me=S.table.find(t=>t.name===S.p.club), op=S.table.find(t=>t.name===M.opp);
+  if(!me||!op) return;
+  me.j++; op.j++;
+  if(win){ me.v++; me.pts+=3; op.d++; }
+  else if(draw){ me.e++; op.e++; me.pts++; op.pts++; }
+  else { me.d++; op.v++; op.pts+=3; }
+  me.gp+=M.myG; me.gc+=M.oppG; op.gp+=M.oppG; op.gc+=M.myG;
+}
+function leaguePos(){
+  const t=(S.table||buildTable()).slice().sort((a,b)=>b.pts-a.pts||(b.gp-b.gc)-(a.gp-a.gc));
+  return t.findIndex(x=>x.name===S.p.club)+1;
+}
+function checkSeason(){
+  const p=S.p, div=DIVS[p.div];
+  if(p.round<=div.need) return "";
+  const pos=leaguePos(), last=p.div===DIVS.length-1;
+  let txt;
+  if(pos===1){
+    const t=last?"Campeão da Knights League":`Campeão da ${div.name}`;
+    p.trophies.push({n:t,season:p.season,age:p.age});
+  }
+  if(!last && pos<=3){
+    p.div++; p.club=DIVS[p.div].teams[0];
+    p.contract.sal=Math.round(p.contract.sal*2); p.contract.bonus=Math.round(p.contract.bonus*1.8); p.contract.res=Math.round(p.contract.res*2);
+    p.fame=clamp(p.fame+8,0,100); p.offers=[];
+    p.trophies.push({n:`Acesso à ${DIVS[p.div].name}`,season:p.season,age:p.age});
+    txt=`Promovido! Você foi para a ${DIVS[p.div].name} pelo ${p.club}.`;
+    refreshOpps();
+  } else if(last && pos===1){
+    p.fame=clamp(p.fame+20,0,100); txt="Campeão da Knights League!";
+  } else {
+    txt=`Temporada encerrada em ${pos}º lugar. Continue lutando por acesso.`;
+  }
+  if(pos===1 && !last) p.fame=clamp(p.fame+5,0,100);
+  p.age++;
+  if(p.age>=29 && Math.random()<0.3){
+    const k=Math.random()<0.5?"vel":"res";
+    if(p.a[k]>1){ p.a[k]--; note(`Com a idade, ${attrName(k)} caiu para ${p.a[k]}.`); }
+  }
+  p.round=1; p.season++; p.seasonStart=p.weekN; S.table=null;
+  note(txt);
+  return txt;
+}
+function makeOffer(){
+  const p=S.p; if(p.div>=DIVS.length-1) return;
+  const nd=DIVS[p.div+1], club=pick(nd.teams);
+  p.offers.push({club,div:nd.name,sal:Math.round(p.contract.sal*1.6),bonus:Math.round(p.contract.bonus*1.4),res:Math.round(p.contract.res*1.5)});
+  note(`Proposta do ${club} (${nd.name}).`);
+}
+window.acceptOffer=function(i){
+  const p=S.p, o=p.offers[i]; if(!o) return;
+  const fee=Math.round(o.res/3);
+  if(p.money<fee) return toast("Sem dinheiro para pagar a taxa de transferência.");
+  p.money-=fee; p.club=o.club; p.contract={sal:o.sal,bonus:o.bonus,res:o.res};
+  p.div=Math.min(p.div+1,DIVS.length-1); p.round=1; p.season++; p.seasonStart=p.weekN; S.table=null; p.offers=[];
+  refreshOpps();
+  note(`Você assinou com o ${o.club}!`); save(); renderAll();
+};
+window.rejectOffer=function(i){ S.p.offers.splice(i,1); note("Você recusou uma proposta."); save(); renderAll(); };
+
+// ===== Dia de jogo: regras estilo Kings League =====
+// Formato: 6 jogadores na linha + goleiro por time, entrando um a um.
+const FIELD_MINE=[[12,90],[60,130],[60,50],[100,40],[100,90],[100,140],[135,90]];
+const FIELD_THEIRS=[[288,90],[240,130],[240,50],[200,40],[200,90],[200,140],[165,90]];
+const PIDX={goleiro:0,fixo:1,ala:3,pivo:6};
+const CARDS=[
+  {id:"gol2",n:"Gol 2x",d:"Gols valem o dobro por 2 lances"},
+  {id:"pen",n:"Pênalti",d:"Cobrança imediata para o seu time"},
+  {id:"estrela",n:"Jogador estrela",d:"Seu próximo gol vale em dobro"},
+  {id:"susp",n:"Suspensão",d:"Um adversário fica fora por 2 lances"},
+  {id:"coringa",n:"Coringa",d:"Vira uma das outras cartas, escolhida ao acaso"},
+];
+
+function figure(x,y,color,me){
+  return `<g transform="translate(${x},${y})">
+    <ellipse cx="0" cy="13" rx="${me?8:7}" ry="2.5" fill="#0005"/>
+    ${me?'<circle cx="0" cy="-2" r="11" fill="none" stroke="#f5b400" stroke-width="1.5" stroke-dasharray="3 2"/>':""}
+    <rect x="-5" y="-2" width="10" height="13" rx="3" fill="${color}" stroke="${me?"#fff":"#111"}" stroke-width="${me?1.4:.8}"/>
+    <rect x="-4" y="10" width="3" height="5" fill="#222"/><rect x="1" y="10" width="3" height="5" fill="#222"/>
+    <circle cx="0" cy="-6" r="4.5" fill="#f2c9a0" stroke="#111" stroke-width=".8"/>
+    <path d="M-4.5,-7 Q0,-12.5 4.5,-7 Z" fill="${color}"/>
+  </g>`;
+}
+function flashField(){
+  const f=document.querySelector("#sMatch .field");
+  f.classList.remove("flash"); void f.offsetWidth; f.classList.add("flash");
+}
+function slotOrder(){
+  const ui=PIDX[S.p.pos];
+  const rest=[1,2,3,4,5,6].filter(i=>i!==ui);
+  return S.p.pos==="goleiro"?rest:[ui,...rest];
+}
+function updatePlayers(){
+  const outM=M.outMine, outO=M.outOpp, ui=PIDX[S.p.pos];
+  let mine=figure(FIELD_MINE[0][0],FIELD_MINE[0][1],ui===0?S.p.shirt:"#4aa3ff",ui===0);
+  mine+=slotOrder().slice(0,outM).map(i=>figure(FIELD_MINE[i][0],FIELD_MINE[i][1],i===ui?S.p.shirt:"#4aa3ff",i===ui)).join("");
+  let theirs=figure(FIELD_THEIRS[0][0],FIELD_THEIRS[0][1],"#ff5d5d",false);
+  theirs+=[1,2,3,4,5,6].slice(0,outO).map(i=>figure(FIELD_THEIRS[i][0],FIELD_THEIRS[i][1],"#ff5d5d",false)).join("");
+  $("players").innerHTML=mine+theirs;
+}
+function setBall(x){ $("ballG").style.transform=`translate(${6+clamp(x,2,98)*2.88}px,90px)`; }
+function showPop(id){ ["popPre","popPlay","popHalf","popInfo","popEnd"].forEach(s=>$(s).classList.toggle("hidden",s!==id)); }
+function info(title,text,labels,cb){
+  $("infoTitle").textContent=title;
+  $("infoText").textContent=text;
+  $("infoOpts").innerHTML=labels.map((l,i)=>`<button class="sec opt" onclick="infoPick(${i})"><b>${l}</b></button>`).join("");
+  M.infoCb=cb; showPop("popInfo");
+}
+function infoPick(i){ const cb=M.infoCb; M.infoCb=null; if(cb) cb(i); }
+function updScore(){ $("mScore").textContent=`${S.p.club}  ${M.myG} x ${M.oppG}  ${M.opp}`; }
+function fill(t){ return t.replaceAll("{mate}",M.mate).replaceAll("{star}",M.star); }
+
+function startDay(){
+  const p=S.p, g=gameThisWeek();
+  if(!g || !p.week.rested) return toast("Descanse antes do jogo.");
+  if(p.injury>0) return toast("Você está lesionado e não pode jogar.");
+  const oppRoster=ROSTERS[g.opp]||DEFAULT_MATES;
+  M={opp:g.opp,str:clamp(DIVS[p.div].str+rnd(-1,1),1,10),tac:"equilibrio",conc:false,warm:false,
+     step:0,half2:false,myG:0,oppG:0,rating:0,st:{g:0,a:0,y:0},
+     halfAtk:0,halfDef:0,velBonus:0,cur:null,phase:"",min:0,
+     mate:pick(mates()),star:pick(oppRoster),
+     outMine:1,outOpp:1,cap:null,capUntil:0,dado:false,pres:false,desc:false,
+     doubleUntil:0,starOn:false,suspOpp:0,susp:0,yc:0,redOut:false,golden:false,shoot:null,infoCb:null};
+  show("sMatch");
+  setBall(50); updScore(); updatePlayers();
+  $("fieldCount").textContent="";
+  $("playClock").textContent="Pré-jogo";
+  $("playLog").innerHTML="";
+  renderPre(); showPop("popPre");
+}
+function renderPre(){
+  const p=S.p;
+  $("preOpp").textContent=M.opp;
+  $("preStar").textContent=M.star;
+  $("preMate").textContent=M.mate;
+  $("preStr").innerHTML=dots(M.str);
+  $("preEn").textContent=Math.round(p.energy)+"%";
+  $("preMo").textContent=Math.round(p.moral)+"%";
+  bar("pbEn",p.energy); bar("pbMo",p.moral,40,25);
+  $("preWarn").innerHTML=p.energy<40?`<div class="warnbox">Energia baixa: o rendimento vai cair nos lances.</div>`:"";
+  $("preTac").innerHTML=Object.entries(TACTICS).map(([k,x])=>
+    `<button class="sec opt ${M.tac===k?"sel":""}" onclick="setTac('${k}')"><b>${x.n}</b><small>${x.d}</small></button>`).join("");
+  $("btnConc").classList.toggle("sel",M.conc);
+  $("btnWarm").classList.toggle("sel",M.warm);
+}
+function setTac(k){ M.tac=k; renderPre(); }
+function togPre(w){ if(w==="conc") M.conc=!M.conc; else M.warm=!M.warm; renderPre(); }
+function startPlay(){
+  const p=S.p;
+  if(M.conc){ p.moral=clamp(p.moral+4,0,100); p.energy=clamp(p.energy-3,0,100); }
+  if(M.warm){ p.energy=clamp(p.energy-6,0,100); M.velBonus=2; }
+  M.step=0;
+  $("playLog").innerHTML="";
+  logM("",`Apito inicial contra ${M.opp}. Tática: ${TACTICS[M.tac].n}.`,"");
+  refreshField();
+  info("Bola solta no centro","Só os goleiros e um jogador de cada lado estão em campo. Quem chegar primeiro na bola começa o jogo. Um jogador entra a cada lance.",["Correr para a bola"],()=>nextSit());
+}
+function logM(min,text,tone){
+  const cls=tone==="good"?"good":tone==="bad"?"badtxt":"";
+  $("playLog").insertAdjacentHTML("afterbegin",`<p>${min?`<span class="tag">${min}</span>`:""}<span class="${cls}">${text}</span></p>`);
+}
+
+// quantos jogadores de linha cada time tem em campo neste momento
+function refreshField(){
+  const step=M.step;
+  let base=Math.min(6,1+step);
+  if(step>=6) base=Math.max(1,base-(step-5));
+  if(M.cap && step<M.capUntil) base=Math.min(base,M.cap);
+  M.outMine=base;
+  M.outOpp=Math.max(0,base-(M.suspOpp>0?1:0));
+  updatePlayers();
+  $("fieldCount").textContent=`Em campo: ${M.outMine+1} x ${M.outOpp+1} (com goleiro)`;
+}
+function pickSit(){
+  const hasMate=s=>JSON.stringify(s).includes("{mate}");
+  const noMate=M.outMine<2;
+  if(S.p.pos==="goleiro"){ const pool=noMate?GK_SITS.filter(s=>!hasMate(s)):GK_SITS; return pick(pool); }
+  const base=Math.random()<0.55?ATK_SITS:DEF_SITS;
+  const pool=noMate?base.filter(s=>!hasMate(s)):base;
+  return pick(pool.length?pool:base);
+}
+function setClock(){
+  const min=(M.step%4+1)*5+(M.step>=4?20:0);
+  M.min=min;
+  $("playClock").textContent=`${min} min · ${M.step<4?"1º tempo":"2º tempo"}`;
+}
+function nextSit(){
+  if(M.golden && M.myG!==M.oppG) return endMatch();
+  if(M.step===4 && !M.half2){ renderHalf(); showPop("popHalf"); return; }
+  if(M.step>=8) return endMatch();
+  refreshField();
+  if(M.step===2 && !M.dado){
+    M.dado=true; M.cap=rnd(1,3); M.capUntil=M.step+2; refreshField();
+    logM("",`Dado gigante: partida limitada a ${M.cap}x${M.cap} por dois lances.`,"bad");
+    return info("Dado gigante",`O dado caiu no ${M.cap}. Por dois lances a linha vira ${M.cap} contra ${M.cap}.`,["Continuar"],()=>nextSit());
+  }
+  if(M.step===5 && !M.pres){
+    M.pres=true;
+    return info("Pênalti do presidente","Seu time tem direito a um pênalti. Você cobra ou manda um atleta?",["Cobrar você mesmo","Mandar o atleta"],i=>{ penalty(i===0?"fin":"vis"); nextSit(); });
+  }
+  if(M.step===6 && !M.desc){
+    M.desc=true;
+    const tie=M.myG===M.oppG;
+    if(tie) M.golden=true;
+    return info("Desescalonamento","A partir de agora um jogador sai de campo a cada lance."+(tie?" Empate: o próximo gol decide a partida (gol de ouro).":""),["Continuar"],()=>nextSit());
+  }
+  if(M.redOut || M.susp>0){
+    const sit=pickSit(); M.cur=sit; M.phase="choice";
+    if(M.susp>0) M.susp--;
+    setClock();
+    return doPick(rnd(0,sit.o.length-1),true);
+  }
+  const sit=pickSit();
+  M.cur=sit; M.phase="choice";
+  setClock();
+  $("playPrompt").innerHTML=`<span class="mut">${fill(sit.t)}</span>`;
+  $("playOpts").innerHTML=sit.o.map((o,i)=>`<button class="sec opt" onclick="pickOpt(${i})">${fill(o.l)}</button>`).join("");
+  showPop("popPlay");
+}
+function pickOpt(i){ doPick(i,false); }
+function doPick(i,auto){
+  if(M.phase!=="choice") return;
+  M.phase="res";
+  showPop("popPlay");
+  const p=S.p, o=M.cur.o[i];
+  const r=resolve(o.k,o.s);
+  M.step++;
+  if(M.suspOpp>0) M.suspOpp--;
+  $("playPrompt").innerHTML=`<span class="mut">${fill(M.cur.t)}</span>${auto?'<br><span class="mut">Seu companheiro resolve o lance.</span>':""}<br><b class="${r.tone==="good"?"good":r.tone==="bad"?"badtxt":""}">${r.text}</b>`;
+  logM(M.min+"'",(auto?"Companheiro: ":"")+r.text,r.tone);
+  if(r.goal) scoreMine();
+  if(r.assist) M.st.a++;
+  if(r.yellow){
+    M.yc++;
+    if(M.yc>=2){ M.redOut=true; p.moral=clamp(p.moral-8,0,100); logM("","Segundo amarelo: expulsão. Seu companheiro segue sem você.","bad"); }
+    else { M.susp=1; logM("","Amarelo: 2 minutos de suspensão. Seu companheiro resolve o próximo lance.","bad"); }
+  }
+  if(r.inj && !auto && Math.random()<0.5){ p.injury=1; logM("","Você saiu mancando. Lesão: precisa descansar antes de jogar de novo.","bad"); }
+  const threat=!r.goal && Math.random()<0.14+M.str*0.025-eff("mar")*0.01;
+  const oppAtk=(r.danger && Math.random()<0.4+M.str*0.03)||(!r.goal&&r.lose&&Math.random()<0.1+M.str*0.02)||threat;
+  if(r.oppGoal||oppAtk) scoreOpp();
+  setBall(r.ball); updScore();
+  p.energy=clamp(p.energy-(auto?0:2)-(TACTICS[M.tac].eg||0),0,100);
+  M.rating+=auto?0:r.rate;
+  $("playOpts").innerHTML=`<button onclick="nextSit()">Continuar</button>`;
+  save();
+}
+function goalMult(){ return M.doubleUntil>M.step?2:1; }
+function scoreMine(){
+  const p=S.p;
+  let mult=goalMult();
+  if(M.starOn){ mult*=2; M.starOn=false; logM("","Jogador estrela: gol valendo dobro!","good"); }
+  M.myG+=mult; M.st.g+=1; p.stats.g+=1;
+  p.moral=clamp(p.moral+3,0,100); p.fans+=rnd(3,10);
+  updScore(); flashField();
+}
+function scoreOpp(){
+  const mult=goalMult();
+  M.oppG+=mult; logM(M.min+"'",`Gol do ${M.opp}!`,"bad");
+  S.p.moral=clamp(S.p.moral-4,0,100);
+  updScore(); flashField();
+}
+function penalty(stat){
+  const sc=eff(stat)+rnd(0,10)-M.str*0.5;
+  if(sc>=10){ scoreMine(); logM("","Pênalti convertido!","good"); }
+  else logM("","Pênalti perdido!","bad");
+  updScore();
+}
+function applyCard(id){
+  if(id==="gol2"){ M.doubleUntil=M.step+2; logM("","Carta Gol 2x: os gols valem dobro por 2 lances.","good"); }
+  if(id==="pen"){ logM("","Carta Pênalti: cobrança imediata.","good"); penalty("fin"); }
+  if(id==="estrela"){ M.starOn=true; logM("","Carta Jogador estrela: seu próximo gol vale em dobro.","good"); }
+  if(id==="susp"){ M.suspOpp=2; logM("","Carta Suspensão: um adversário fica fora por 2 lances.","good"); }
+  if(id==="coringa"){
+    const c=pick(CARDS.filter(x=>x.id!=="coringa"));
+    logM("",`Carta Coringa: virou ${c.n}.`,"good");
+    applyCard(c.id);
+  }
+}
+function resolve(k,s){
+  const p=S.p, tac=TACTICS[M.tac];
+  const isAtk=ATK_KINDS.includes(k);
+  let sc=eff(s)*1.3+rnd(0,10)+2-M.str*0.5+(isAtk?tac.atk:tac.def)+(isAtk?M.halfAtk:M.halfDef);
+  if(M.outMine>M.outOpp) sc+=1; else if(M.outMine<M.outOpp) sc-=1;
+  if(M.cap && M.step<M.capUntil && isAtk) sc+=1;
+  if(k==="corrida"||k==="saida"||k==="contra"||k==="disparo") sc+=(tac.vel||0)+M.velBonus;
+  if(p.trait==="craque"&&k==="drible") sc+=2;
+  if(p.trait==="pavio"&&k==="chute") sc+=2;
+  if(p.energy<40) sc-=2;
+  if(p.moral<30) sc-=1;
+  const tier=sc>=11?3:sc>=7?2:sc>=4?1:0;
+  const d={...OUT[k][tier]};
+  if(tier===2 && isAtk && ["chute","cabeca","rebote","lance"].includes(k) && Math.random()<0.3){ d.goal=1; d.t="GOL! A finalização vence o goleiro."; d.b=95; }
+  if(p.trait==="pavio"&&d.foul&&Math.random()<0.2) d.yellow=1;
+  return {text:d.t,ball:d.b,goal:!!d.goal,assist:!!d.assist,yellow:!!d.yellow,inj:!!d.inj,
+    oppGoal:!!d.oppGoal,danger:!!d.danger,lose:!!d.lose,rate:RATE[tier],
+    tone:d.goal?"good":(d.oppGoal||d.lose)?"bad":""};
+}
+function renderHalf(){
+  $("halfInfo").textContent=`Placar: ${S.p.club} ${M.myG} x ${M.oppG} ${M.opp}. Escolha a palestra para o segundo tempo.`;
+  $("halfOpts").innerHTML=HALF.map(h=>`<button class="sec opt" onclick="applyHalf('${h.id}')"><b>${h.n}</b><small>${h.d}</small></button>`).join("");
+}
+function applyHalf(id){
+  const p=S.p;
+  if(id==="int"){ M.halfAtk+=1; p.energy=clamp(p.energy-5,0,100); p.moral=clamp(p.moral+2,0,100); logM("","Palestra: intensidade total.","good"); }
+  if(id==="fech"){ M.halfDef+=2; logM("","Palestra: defesa fechada.",""); }
+  if(id==="contra"){ M.halfAtk+=1; M.velBonus+=2; logM("","Palestra: explorar o contra-ataque.",""); }
+  M.half2=true;
+  cardChoice();
+}
+function cardChoice(){
+  const opts=[...CARDS].sort(()=>Math.random()-0.5).slice(0,3);
+  info("Segundo tempo: carta secreta","Escolha uma carta. O efeito começa agora.",opts.map(c=>`${c.n}: ${c.d}`),i=>{ applyCard(opts[i].id); nextSit(); });
+}
+function shootout(){
+  let a=0,b=0;
+  const round=()=>{ if(eff("fin")+rnd(0,10)>=9) a++; if(rnd(0,10)+M.str*0.5>=8) b++; };
+  for(let i=0;i<5;i++) round();
+  let extra=0;
+  while(a===b && extra<10){ round(); extra++; }
+  return {a,b};
+}
+function endMatch(){
+  const p=S.p;
+  let win=M.myG>M.oppG, draw=M.myG===M.oppG;
+  if(draw){ M.shoot=shootout(); win=M.shoot.a>M.shoot.b; draw=false; }
+  const rating=clamp(Math.round(5.5+M.rating*0.35+(M.myG-M.oppG)*0.4+M.st.a*0.3),1,10);
+  const pay=Math.round(p.contract.sal/4+p.contract.bonus*M.myG+(win?150:0));
+  p.money+=pay;
+  p.stats.gp++; p.stats.a+=M.st.a; if(win) p.stats.w++;
+  p.maxGoals=Math.max(p.maxGoals||0,M.myG);
+  p.xp+=15+M.myG*5+(win?10:0);
+  while(p.xp>=50){ p.xp-=50; p.lvl++; p.pts++; note(`Subiu para o nível ${p.lvl}: 1 ponto de atributo.`); }
+  p.fans+=(win?30:10)+M.myG*4;
+  p.fame=clamp(p.fame+(win?2:0)+M.myG,0,100);
+  p.moral=clamp(p.moral+(win?8:draw?2:-6),0,100);
+  updateTable(win,draw);
+  p.hist.push({season:p.season,week:p.weekN,opp:M.opp,my:M.myG,op:M.oppG});
+  p.round++;
+  p.sched.shift(); fillSched();
+  endWeek();
+  p.energy=clamp(p.energy+10,0,100);
+  note(`Resultado: ${p.club} ${M.myG} x ${M.oppG} ${M.opp}${M.shoot?` (pênaltis ${M.shoot.a} x ${M.shoot.b})`:""}. Nota ${rating}.`);
+  let promo="";
+  if(p.round>DIVS[p.div].need) promo=checkSeason();
+  else if(p.round%3===0 && p.offers.length<2 && (p.fame>=20||p.ovr>=40)) makeOffer();
+  M.result={win,draw,rating,pay,promo,shoot:M.shoot};
+  renderEnd(); showPop("popEnd"); save();
+}
+function renderEnd(){
+  const R=M.result, p=S.p;
+  $("endTitle").textContent=R.win?(R.shoot?"Vitória nos pênaltis":"Vitória"):R.draw?"Empate":"Derrota";
+  $("endTitle").className=R.win?"good":R.draw?"gold":"badtxt";
+  const items=[["Placar",`${M.myG} x ${M.oppG}`],["Nota",R.rating],["Gols",M.st.g],["Assistências",M.st.a],["Cartões amarelos",M.yc],["Ganho",fmt(R.pay)],["Moral",Math.round(p.moral)+"%"],["Energia",Math.round(p.energy)+"%"]];
+  $("endGrid").innerHTML=items.map(([a,b])=>`<div class="stat"><span class="mut">${a}</span><b>${b}</b></div>`).join("");
+  const parts=[];
+  if(R.shoot) parts.push(`Decidido nos pênaltis: ${R.shoot.a} x ${R.shoot.b}.`);
+  if(R.promo) parts.push(R.promo);
+  $("endText").textContent=parts.join(" ");
+}
+function backHome(){ show("sHome"); }
+
+// ===== Inicialização =====
+S=load();
+if(S && !S.p) S=null;
+if(S){
+  const p=S.p;
+  p.sched=p.sched||[]; p.hist=p.hist||[]; p.inv=p.inv||{}; p.owned=p.owned||{};
+  p.trophies=p.trophies||[]; p.maxGoals=p.maxGoals||0;
+  p.shirt=p.shirt||"#4aa3ff"; p.seasonStart=p.seasonStart||1;
+  if(!p.age) p.age=18;
+  fillSched();
+}
+show("sMenu");
+</script>
+</body>
+</html>
