@@ -163,29 +163,38 @@ nav button.on{color:var(--acc)}
     <div class="card">
       <h2>Novo jogador</h2>
       <label>Nome</label><input id="cName" type="text" value="Dudu">
-    <div class="grid2"> 
-    <div> 
-    <label>Idade (16 a 30)</label> 
-    <input id="cAge" type="number" min="16" max="30" value="18" onkeydown="return false;">
-      /* Remove a aparência de caixa tradicional do input */
-input[type="number"] {
-  border: none;
-  background: transparent;
-  font-size: 18px;
-  font-weight: bold;
-  width: 50px; /* Ajuste o tamanho para caber apenas o número */
-  text-align: center;
-  outline: none;
-}
+<div class="grid2">
+  <div>
+    <label for="cAge">Idade (16 a 30)</label>
+    <div class="counter-container">
+      <!-- Botão de Subtrair -->
+      <button type="button" class="btn-counter" onclick="alterarValor(-1)">-</button>
+      
+      <!-- Input (com digitação bloqueada pelo readonly) -->
+      <input id="cAge" type="number" min="16" max="30" value="18" readonly>
+      
+      <!-- Botão de Somar -->
+      <button type="button" class="btn-counter" onclick="alterarValor(1)">+</button>
+    </div>
+  </div>
+</div>
 
-/* Garante que as setas continuem visíveis e funcionais */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  opacity: 1; /* Força as setas a ficarem sempre visíveis */
-}
+<script>
+function alterarValor(mudanca) {
+  const input = document.getElementById('cAge');
+  const min = parseInt(input.min) || 16;
+  const max = parseInt(input.max) || 30;
+  let valorAtual = parseInt(input.value) || 18;
 
-        </div>
-        <div>
+  // Calcula o novo valor
+  let novoValor = valorAtual + mudanca;
+
+  // Garante que o valor respeite o mínimo e o máximo
+  if (novoValor >= min && novoValor <= max) {
+    input.value = novoValor;
+  }
+}
+</script>
           <label>Posição</label>
           <select id="cPos">
             <option value="ala">Ala</option>
