@@ -166,18 +166,32 @@ nav button.on{color:var(--acc)}
 <div class="grid2">
   <div>
     <label for="cAge">Idade (16 a 30)</label>
-    <div class="counter-container">
-      <!-- Botão de Subtrair -->
-      <button type="button" class="btn-counter" onclick="alterarValor(-1)">-</button>
+    
+    <!-- Container dos botões e número -->
+    <div style="display: inline-flex; align-items: center; gap: 8px; margin-top: 5px;">
       
-      <!-- Input (com digitação bloqueada pelo readonly) -->
-      <input id="cAge" type="number" min="16" max="30" value="18" readonly>
+      <!-- Botão de Diminuir -->
+      <button type="button" 
+              onclick="document.getElementById('cAge').stepDown()" 
+              style= style="width: 44px; height: 22px; font-size: 20px; padding: 0; line-height: 1; display: flex; align-items: center; justify-content: center; border: 2px solid #ccc; background: #f0f0f0; border-radius: 100%; cursor: pointer;">
+        -
+      </button>
       
-      <!-- Botão de Somar -->
-      <button type="button" class="btn-counter" onclick="alterarValor(1)">+</button>
+      <!-- Campo de Número (Estilizado direto no HTML) -->
+      
+      <input id="cAge" type="number" min="16" max="30" value="18" readonly 
+             style="border: 2px solid; background: transparent; text-align: center; width: 65px; font-size: 20px; font-weight: bold; outline: 1px solid; -moz-appearance: textfield;">
+      <!-- Botão de Aumentar -->
+      <button type="button" 
+              onclick="document.getElementById('cAge').stepUp()" 
+              style=style="width: 44px; height: 22px; font-size: 20px; padding: 0; line-height: 1; display: flex; align-items: center; justify-content: center; border: 2px solid #ccc; background: #f0f0f0; border-radius: 100%; cursor: pointer;">
+        +
+      </button>
+
     </div>
   </div>
 </div>
+
 
 <script>
 function alterarValor(mudanca) {
@@ -203,7 +217,6 @@ function alterarValor(mudanca) {
             <option value="goleiro">Goleiro</option>
           </select>
         </div>
-      </div>
       <label>Personalidade</label>
       <select id="cTrait">
         <option value="craque">Craque de rua: drible +2</option>
@@ -214,7 +227,6 @@ function alterarValor(mudanca) {
       <div id="cAttrs"></div>
       <button onclick="startCareer()">Começar na Amadora</button>
       <button class="sec" onclick="show('sMenu')">Voltar</button>
-    </div>
   </main>
 </section>
 
