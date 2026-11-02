@@ -83,6 +83,7 @@ nav button.on{color:var(--acc)}
 @keyframes flashF{0%{filter:brightness(1)}25%{filter:brightness(1.7) saturate(1.3)}100%{filter:brightness(1)}}
 .field.flash{animation:flashF .9s ease-out}
 .evopt{text-align:left;display:block}
+.centermsg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:80%;background:rgba(0,0,0,.78);border:1px solid var(--acc);border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;text-align:center;z-index:4;pointer-events:none}
 .pop h2{font-size:15px;margin:0 0 8px;color:var(--acc)}
 </style>
 </head>
@@ -163,52 +164,16 @@ nav button.on{color:var(--acc)}
     <div class="card">
       <h2>Novo jogador</h2>
       <label>Nome</label><input id="cName" type="text" value="Dudu">
-<div class="grid2">
-  <div>
-    <label for="cAge">Idade (16 a 30)</label>
-    
-    <!-- Container dos botões e número -->
-    <div style="display: inline-flex; align-items: center; gap: 8px; margin-top: 5px;">
-      
-      <!-- Botão de Diminuir -->
-      <button type="button" 
-              onclick="document.getElementById('cAge').stepDown()" 
-              style= style="width: 44px; height: 22px; font-size: 20px; padding: 0; line-height: 1; display: flex; align-items: center; justify-content: center; border: 2px solid #ccc; background: #f0f0f0; border-radius: 100%; cursor: pointer;">
-        -
-      </button>
-      
-      <!-- Campo de Número (Estilizado direto no HTML) -->
-      
-      <input id="cAge" type="number" min="16" max="30" value="18" readonly 
-             style="border: 2px solid; background: transparent; text-align: center; width: 65px; font-size: 20px; font-weight: bold; outline: 1px solid; -moz-appearance: textfield;">
-      <!-- Botão de Aumentar -->
-      <button type="button" 
-              onclick="document.getElementById('cAge').stepUp()" 
-              style=style="width: 44px; height: 22px; font-size: 20px; padding: 0; line-height: 1; display: flex; align-items: center; justify-content: center; border: 2px solid #ccc; background: #f0f0f0; border-radius: 100%; cursor: pointer;">
-        +
-      </button>
-
-    </div>
-  </div>
-</div>
-
-
-<script>
-function alterarValor(mudanca) {
-  const input = document.getElementById('cAge');
-  const min = parseInt(input.min) || 16;
-  const max = parseInt(input.max) || 30;
-  let valorAtual = parseInt(input.value) || 18;
-
-  // Calcula o novo valor
-  let novoValor = valorAtual + mudanca;
-
-  // Garante que o valor respeite o mínimo e o máximo
-  if (novoValor >= min && novoValor <= max) {
-    input.value = novoValor;
-  }
-}
-</script>
+      <div class="grid2">
+        <div>
+          <label>Idade (16 a 30)</label>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+            <button class="sec small" onclick="cAgeAdj(-1)">-</button>
+            <b id="cAgeV" style="min-width:32px;text-align:center">18</b>
+            <button class="sec small" onclick="cAgeAdj(1)">+</button>
+          </div>
+        </div>
+        <div>
           <label>Posição</label>
           <select id="cPos">
             <option value="ala">Ala</option>
@@ -217,6 +182,7 @@ function alterarValor(mudanca) {
             <option value="goleiro">Goleiro</option>
           </select>
         </div>
+      </div>
       <label>Personalidade</label>
       <select id="cTrait">
         <option value="craque">Craque de rua: drible +2</option>
@@ -227,6 +193,7 @@ function alterarValor(mudanca) {
       <div id="cAttrs"></div>
       <button onclick="startCareer()">Começar na Amadora</button>
       <button class="sec" onclick="show('sMenu')">Voltar</button>
+    </div>
   </main>
 </section>
 
@@ -251,6 +218,7 @@ function alterarValor(mudanca) {
     <div class="card">
       <h2 id="wkInfo">Semana</h2>
       <p class="mut" id="wkText"></p>
+      <div class="legend" id="form" style="margin-bottom:8px"></div>
       <div id="wkLimits"></div>
       <div class="grid2">
         <button class="sec" id="btnTrain" onclick="show('sTrain')">Treinar</button>
@@ -302,6 +270,11 @@ function alterarValor(mudanca) {
       <p class="mut">Limite de 1 ação por semana. Marketing gasta energia e derruba o moral.</p>
       <div id="mkList"></div>
     </div>
+    <div class="card">
+      <h2>Patrocínio</h2>
+      <p class="mut">Escolha um patrocinador por vez. Quanto maior a fama, melhores os contratos.</p>
+      <div id="mkSponsors"></div>
+    </div>
   </main>
 </section>
 
@@ -339,9 +312,8 @@ function alterarValor(mudanca) {
       <div id="pStats"></div>
     </div>
     <div class="card">
-      <h2>Patrocínios</h2>
-      <p class="mut">Pagos a cada semana enquanto a fama estiver na faixa mínima.</p>
-      <div id="pSponsors"></div>
+      <h2>Histórico de temporadas</h2>
+      <div id="pHist"></div>
     </div>
     <div class="card">
       <h2>Conquistas</h2>
@@ -386,17 +358,22 @@ function alterarValor(mudanca) {
       <p class="mut" id="noOffer">Sem propostas no momento. Fama e desempenho atraem clubes.</p>
     </div>
     <div class="card">
-      <h2>Tabela da divisão</h2>
+      <h2>Copas e Mundial</h2><div id="compBox"></div></div><div class="card"><h2>Tabela da divisão</h2>
       <div class="log" id="table"></div>
     </div>
   </main>
 </section>
 
 <!-- PARTIDA: uma cena só, com popups sobre o campo -->
+<section id="sSeasonEnd" class="hidden">
+  <main>
+    <div class="card"><h2 id="seTitle"></h2><div id="seBody"></div></div>
+  </main>
+</section>
 <section id="sMatch" class="hidden">
   <svg class="field" viewBox="0 0 300 180" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-    <rect x="0" y="0" width="300" height="180" fill="#1f7a3a"/>
-    <g fill="#185f2d" opacity=".55">
+    <rect id="pitchBase" x="0" y="0" width="300" height="180" fill="#1f7a3a"/>
+    <g id="pitchStripes" fill="#185f2d" opacity=".55">
       <rect x="0" y="0" width="25" height="180"/><rect x="50" y="0" width="25" height="180"/><rect x="100" y="0" width="25" height="180"/>
       <rect x="150" y="0" width="25" height="180"/><rect x="200" y="0" width="25" height="180"/><rect x="250" y="0" width="25" height="180"/>
     </g>
@@ -417,9 +394,10 @@ function alterarValor(mudanca) {
     <div class="clock" id="fieldCount"></div>
   </div>
 
+  <div class="centermsg hidden" id="centerMsg"></div>
   <div class="pop center hidden" id="popPre">
     <h2>Dia de jogo</h2>
-    <p class="mut" style="margin:0 0 8px">Regras: 6 jogadores na linha e goleiro por time. Um jogador entra a cada lance. Dado gigante no meio da partida, carta secreta no segundo tempo, pênalti do presidente, desescalonamento no fim e pênaltis se empatar.</p>
+    <p id="preRules" class="mut" style="margin:0 0 8px">Regras: 6 jogadores na linha e goleiro por time. Um jogador entra a cada lance. Dado gigante no meio da partida, carta secreta sorteada no intervalo, pênalti do presidente nos dois times, desescalonamento no fim e pênaltis se empatar.</p>
     <div class="row"><span class="mut">Adversário</span><b id="preOpp"></b></div>
     <div class="row"><span class="mut">Destaque adversário</span><span id="preStar"></span></div>
     <div class="row"><span class="mut">Companheiro de destaque</span><span id="preMate"></span></div>
@@ -478,22 +456,21 @@ function alterarValor(mudanca) {
 <script>
 // ===== Dados =====
 const DIVS=[
-  {name:"Amadora",need:8,str:3,teams:["Capinzal FC","Titãs da Zona","Fênix FC","Lobos Urbanos","Samurais FC","Reis do Asfalto"]},
-  {name:"Série B",need:10,str:5,teams:["Knights Elite","Fúria Negra","Lions FC","Lord SC","Desnivelados FC"]},
-  {name:"Série A",need:12,str:7,teams:["G4X","Flexa Clube","Dendelix FC","Impedidos do Goti","Capinzal FC","Funkfall Clube","Fúria Negra"]},
-  {name:"Campeonato da Knights League",need:10,str:9,teams:["Funkfall Clube","Dendelix FC","Impedidos do Goti","Unreal Elite Clube","Flexa Clube"]},
+  {name:"Amadora",need:14,str:3,teams:["Capinzal FC","Dendê FC","Impedidos do Goti","Real Elite Clube","Fluxo Clube","Funkbal Clube","Fúria Negra","G4X FC"]},
+  {name:"Profissional",need:18,str:6,teams:["Atlético Cimento","Grêmio da Rua","Leões do Bairro","União Ponte","Dragões FC","Unidos da Praça","Lord SC","Nivelados FC","Samurais FC","Lobos Urbanos"]},
+  {name:"Knights League",need:9,str:9,teams:["Knights Elite","Titãs da Zona","Fênix FC","Reis do Asfalto","Real Elite Clube","Fluxo Clube","Dendê FC","Capinzal FC","Funkbal Clube","Fúria Negra"]},
 ];
 const ROSTERS={
   "Capinzal FC":["Maicom Santana","Gabriel Medeiro","Davi Lyra","Henry Jaba","Kléber Barros","Ian Graça","Vitor Florêncio","André Dizoti"],
-  "Dendelix FC":["Rúbio Magalhães","Guilherme Silveira","Tales Vicentino","Gabriel Silveira","Renan Assunção","Matias Tintino","Vini Sousa","Breno Teresinha"],
+  "Dendê FC":["Rúbio Magalhães","Guilherme Silveira","Tales Vicentino","Gabriel Silveira","Renan Assunção","Matias Tintino","Vini Sousa","Breno Teresinha"],
   "Impedidos do Goti":["João Pedro Crus","Gabriel Menocci","Marcelo Silveira Jr.","Lucas Donadon","Fernando Silveira","Luiz Felipe Almeidinha","Guilherme Bernardelli","Vitor Ferrero"],
-  "Unreal Elite Clube":["Matheus Silveira","Marlon Ribeiro","Gustavo Rochinha","João Vitor Fenatti","Andrei Profeta","Gabriel Lisbôa","Eduardo Andrez","Isaque Sanders"],
-  "Flexa Clube":["Vinícius Almeida (Melequeira)","Vini Alexandrino","Vitor Martinez (VM)","Gabriel de Sousa (Intero)","Caio Sanches","Julio Cesar Carvalhal","Sérgio Filhão","Murilo Menetti"],
-  "Funkfall Clube":["Douglas Gurgueira","Luiz Paolo","Jhonatan Goes (Mlk Joe)","Thiago Nascimentos","Flávio Stokunas","Odlanier Madeira","Bruno Maya","Marcelo Silvinha"],
+  "Real Elite Clube":["Matheus Silveira","Marlon Ribeiro","Gustavo Rochinha","João Vitor Fenatti","Andrei Profeta","Gabriel Lisbôa","Eduardo Andrez","Isaque Sanders"],
+  "Fluxo Clube":["Vinícius Almeida (Melequeira)","Vini Alexandrino","Vitor Martinez (VM)","Gabriel de Sousa (Intero)","Caio Sanches","Julio Cesar Carvalhal","Sérgio Filhão","Murilo Menetti"],
+  "Funkbal Clube":["Douglas Gurgueira","Luiz Paolo","Jhonatan Goes (Mlk Joe)","Thiago Nascimentos","Flávio Stokunas","Odlanier Madeira","Bruno Maya","Marcelo Silvinha"],
   "Fúria Negra":["Matheus dos Santo","Vitor Hugo da Silveira","João Pelegrino","Guilherme Monegatti","Gabriel Pastucho","Ryan Limão","Caio Carvalheiro","Murilo Donatto"],
   "G4X FC":["Wembley Luís","Kenu Gonçalvez","Vitor Sampaulo","Igor Rezendes","Luiz Galindo Netto","Felipe Cassiani","Nikolas Olivera","Lucas Silvano"],
   "Lord SC":["Lucas Henriquez","Higor da Costella","Lucas Japinha","Júlio César Rodrigão","Josué dos Santo","Matheus Lisbona","Kelvis Nunez","Nathan Lúcio"],
-  "Desnivelados FC":["Ivo Alvez","Breno Aranha","Bruno dos Santana","Matheus Nerez","Gustavo Simão","Nicolas Barutto","Caio Garcio","Bruno Mendez"],
+  "Nivelados FC":["Ivo Alvez","Breno Aranha","Bruno dos Santana","Matheus Nerez","Gustavo Simão","Nicolas Barutto","Caio Garcio","Bruno Mendez"],
   "Knights Elite":["Rafa Tavares","Bruno Lima","Caio Mendonça","Pedro Gomes","Erick Duarte"],
 };
 const DEFAULT_MATES=["Rafa Tavares","Bruno Lima","Caio Mendonça","Pedro Gomes","Erick Duarte"];
@@ -527,10 +504,15 @@ const EQUIP=[
   {id:"bola",n:"Bola de treino pessoal",p:500,b:{pas:1,dri:1},d:"Passe +1, drible +1"},
 ];
 const SPONSORS=[
-  {n:"Energético Trovão",min:20,pay:150,d:"Fama 20 ou mais"},
-  {n:"Chuteiras Vortex",min:35,pay:350,d:"Fama 35 ou mais"},
-  {n:"Canal de streaming Arena",min:60,pay:700,d:"Fama 60 ou mais"},
+  {id:"trovao",n:"Energético Trovão",tier:"baixo",min:0,pay:120,d:"Sem exigência de fama"},
+  {id:"bola",n:"Loja Bola Cheia",tier:"baixo",min:5,pay:90,d:"Fama 5 ou mais"},
+  {id:"vortex",n:"Chuteiras Vortex",tier:"medio",min:30,pay:320,d:"Fama 30 ou mais"},
+  {id:"corpo",n:"Academia Corpo Forte",tier:"medio",min:35,pay:280,d:"Fama 35 ou mais"},
+  {id:"arena",n:"Canal Arena",tier:"alto",min:60,pay:700,d:"Fama 60 ou mais"},
+  {id:"premium",n:"Marca Premium Knights",tier:"alto",min:75,pay:1100,d:"Fama 75 ou mais"},
 ];
+const DMULT=[1,2.2,4]; // preço da loja e patrocínio sobem com a divisão
+function cp(x){ return Math.round(x*DMULT[S.p.div]); }
 const ACH=[
   {n:"Primeiro gol",ok:p=>p.stats.g>=1},
   {n:"Hat-trick: 3 gols em uma partida",ok:p=>(p.maxGoals||0)>=3},
@@ -629,8 +611,8 @@ function newPlayer(name,pos,trait,extra,age){
   return {name,pos,trait,age,a,energy:100,moral:60,fame:5,fans:120,xp:0,lvl:1,pts:0,
     div:0,round:1,season:1,seasonStart:1,weekN:1,week:{tr:0,mk:0,rested:false},injury:0,
     club:DIVS[0].teams[0],contract:{sal:500,bonus:50,res:3000},money:1200,
-    stats:{gp:0,g:0,a:0,w:0},maxGoals:0,trophies:[],offers:[],ovr:0,sched:[],hist:[],
-    inv:{},owned:{},shirt:"#4aa3ff",
+    stats:{gp:0,g:0,a:0,w:0},maxGoals:0,trophies:[],comps:{copa:null,mundial:null},offers:[],ovr:0,sched:[],hist:[],
+    inv:{},owned:{},shirt:"#4aa3ff",ss:{gp:0,g:0,a:0,w:0},seasons:[],sponsor:null,
     news:["Sua carreira começou na Amadora. Mostre serviço!"]};
 }
 function calcOvr(p){
@@ -653,13 +635,15 @@ function addGame(){
   p.sched.push({week:w,opp:pick(rivals())});
 }
 function fillSched(){ while(S.p.sched.length<3) addGame(); }
-function refreshOpps(){ S.p.sched.forEach(g=>g.opp=pick(rivals())); }
+function refreshOpps(){ S.p.sched.forEach(g=>{ if(!g.comp) g.opp=pick(rivals()); }); }
 function gameThisWeek(){ const g=S.p.sched[0]; return g && g.week===S.p.weekN ? g : null; }
 
 // ===== Telas =====
-const SCREENS=["sMenu","sHelp","sNew","sHome","sTrain","sMkt","sShop","sPers","sClub","sMatch"];
+const SCREENS=["sMenu","sHelp","sNew","sHome","sTrain","sMkt","sShop","sPers","sClub","sMatch","sSeasonEnd"];
 const GAME=["sHome","sTrain","sMkt","sShop","sPers","sClub"];
 function show(id){
+  if(S && S.p && S.p.pendingSeason && GAME.includes(id)) id="sSeasonEnd";
+  if(id==="sSeasonEnd") renderSeasonEnd();
   SCREENS.forEach(s=>$(s).classList.toggle("hidden",s!==id));
   $("top").classList.toggle("hidden",!GAME.includes(id));
   $("nav").classList.toggle("hidden",!GAME.includes(id));
@@ -668,7 +652,7 @@ function show(id){
   if(S && GAME.includes(id)) renderAll();
   window.scrollTo(0,0);
 }
-function renderAll(){ renderTop(); renderHome(); renderTrain(); renderMkt(); renderShop(); renderPers(); renderClub(); }
+function renderAll(){ renderTop(); renderHome(); renderTrain(); renderMkt(); renderSponsors(); renderShop(); renderPers(); renderClub(); }
 function renderTop(){
   const p=S.p, div=DIVS[p.div];
   $("hdr").textContent=`${div.name} · Jogo ${p.round}/${div.need} · Temp. ${p.season}`;
@@ -698,10 +682,11 @@ function renderHome(){
   $("btnRest").textContent=g?"Descansar antes do jogo":"Descansar (encerra a semana)";
   $("dayBox").classList.toggle("hidden",!(g && p.week.rested && p.injury===0));
   renderEvent();
+  $("form").innerHTML=p.hist.filter(h=>h.season===p.season).slice(-5).map(h=>`<span class="lg"><i class="sq ${h.my>h.op?"win":h.my===h.op?"draw":"loss"}"></i>${h.my}x${h.op}</span>`).join("")||'<span class="mut">Sem jogos ainda nesta temporada.</span>';
   $("news").innerHTML=p.news.slice(0,15).map(n=>`<p>${n}</p>`).join("");
   $("upcoming").innerHTML=p.sched.slice(0,3).map(x=>{
     const left=x.week-p.weekN;
-    return `<div class="row"><span>Semana ${x.week} · ${x.opp}</span><span class="tag">${left<=0?"Esta semana":`Em ${left} semana${left>1?"s":""}`}</span></div>`;
+    return `<div class="row"><span>Semana ${x.week} · ${x.opp}${x.label?` · ${x.label}`:""}</span><span class="tag">${left<=0?"Esta semana":`Em ${left} semana${left>1?"s":""}`}</span></div>`;
   }).join("");
 }
 function renderTrain(){
@@ -715,7 +700,7 @@ function renderTrain(){
   $("xpInfo").textContent=`XP ${p.xp}/50 · Nível ${p.lvl}`;
   $("attrList").innerHTML=ATTRS.map(([k,n])=>{
     const bonus=eff(k)-p.a[k];
-    return `<div class="row"><span>${n}</span><span><b>${eff(k)}</b>${bonus?`<span class="mut"> (+${bonus})</span>`:""}<button class="sec small" ${p.pts<=0||p.a[k]>=20?"disabled":""} onclick="upAttr('${k}')">+</button></span></div>`;
+    return `<div class="row"><span>${n}</span><span><b>${eff(k)}</b>${bonus?`<span class="mut"> (+${bonus})</span>`:""}<button class="sec small" ${p.pts<=0||p.a[k]>=25?"disabled":""} onclick="upAttr('${k}')">+</button></span></div>`;
   }).join("");
 }
 function renderMkt(){
@@ -731,21 +716,21 @@ function renderShop(){
   $("shopCons").innerHTML=CONS.map(c=>{
     const n=p.inv[c.id]||0;
     return `<div class="item"><div class="row"><b>${c.n}</b><span class="tag">Tem ${n}</span></div>
-      <div class="mut">${c.d} · ${fmt(c.p)}</div>
-      <div class="grid2"><button onclick="buyCons('${c.id}')" ${p.money<c.p?"disabled":""}>Comprar</button>
+      <div class="mut">${c.d} · ${fmt(cp(c.p))}</div>
+      <div class="grid2"><button onclick="buyCons('${c.id}')" ${p.money<cp(c.p)?"disabled":""}>Comprar</button>
       <button class="sec" onclick="useCons('${c.id}')" ${n<=0?"disabled":""}>Usar</button></div></div>`;
   }).join("");
   $("shopEquip").innerHTML=EQUIP.map(e=>{
     const own=!!p.owned[e.id];
     return `<div class="item"><div class="row"><b>${e.n}</b>${own?'<span class="tag">Comprado</span>':""}</div>
-      <div class="mut">${e.d} · ${fmt(e.p)}</div>
-      <button onclick="buyEquip('${e.id}')" ${own||p.money<e.p?"disabled":""}>${own?"Já possui":"Comprar"}</button></div>`;
+      <div class="mut">${e.d} · ${fmt(cp(e.p))}</div>
+      <button onclick="buyEquip('${e.id}')" ${own||p.money<cp(e.p)?"disabled":""}>${own?"Já possui":"Comprar"}</button></div>`;
   }).join("");
 }
 function buyCons(id){
   const p=S.p, c=CONS.find(x=>x.id===id);
-  if(p.money<c.p) return toast("Dinheiro insuficiente.");
-  p.money-=c.p; p.inv[id]=(p.inv[id]||0)+1;
+  if(p.money<cp(c.p)) return toast("Dinheiro insuficiente.");
+  p.money-=cp(c.p); p.inv[id]=(p.inv[id]||0)+1;
   note(`Você comprou ${c.n}.`); save(); renderAll();
 }
 function useCons(id){
@@ -763,11 +748,27 @@ function useCons(id){
 function buyEquip(id){
   const p=S.p, e=EQUIP.find(x=>x.id===id);
   if(p.owned[id]) return;
-  if(p.money<e.p) return toast("Dinheiro insuficiente.");
-  p.money-=e.p; p.owned[id]=true;
+  if(p.money<cp(e.p)) return toast("Dinheiro insuficiente.");
+  p.money-=cp(e.p); p.owned[id]=true;
   note(`Você comprou ${e.n}.`); save(); renderAll();
 }
-function sponsorIncome(){ return SPONSORS.filter(s=>S.p.fame>=s.min).reduce((a,s)=>a+s.pay,0); }
+function sponsorIncome(){ const p=S.p; const s=SPONSORS.find(x=>x.id===p.sponsor); return s?Math.round(s.pay*DMULT[p.div]):0; }
+function checkSponsor(){ const p=S.p; const s=SPONSORS.find(x=>x.id===p.sponsor); if(s && p.fame<s.min){ p.sponsor=null; note(`${s.n} encerrou o contrato por falta de fama.`); } }
+function setSponsor(id){
+  const p=S.p, s=SPONSORS.find(x=>x.id===id);
+  if(p.fame<s.min) return toast("Fama insuficiente para este patrocinador.");
+  p.sponsor=id; note(`Você assinou com ${s.n}.`); save(); renderAll();
+}
+function renderSponsors(){
+  const p=S.p, mult=DMULT[p.div];
+  const tiers=[["baixo","Nível baixo"],["medio","Nível médio"],["alto","Nível alto"]];
+  $("mkSponsors").innerHTML=tiers.map(([t,label])=>`<p class="mut" style="margin:10px 0 2px">${label}</p>`+
+    SPONSORS.filter(s=>s.tier===t).map(s=>{
+      const on=p.sponsor===s.id, ok=p.fame>=s.min;
+      const btn=on?'<span class="tag">Ativo</span>':`<button class="sec small" ${ok?"":"disabled"} onclick="setSponsor('${s.id}')">${ok?"Assinar":"Fama "+s.min}</button>`;
+      return `<div class="item"><div class="row"><b>${s.n}</b>${btn}</div><div class="mut">${s.d} · ${fmt(s.pay*mult)} por semana</div></div>`;
+    }).join("")).join("");
+}
 function trophyCup(){
   return `<svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
     <path d="M10 6 H30 V16 Q30 27 20 27 Q10 27 10 16 Z" fill="#f5b400"/>
@@ -790,19 +791,22 @@ function renderPers(){
     ["Divisão",div.name],["Jogos",p.stats.gp],["Vitórias",p.stats.w],["Gols",p.stats.g],["Assistências",p.stats.a],
     ["Maior número de gols em uma partida",p.maxGoals||0],["Fama",p.fame],["Seguidores",p.fans],["Renda de patrocínio por semana",fmt(sponsorIncome())]
   ].map(([a,b])=>`<div class="stat"><span class="mut">${a}</span><b>${b}</b></div>`).join("");
-  $("pSponsors").innerHTML=SPONSORS.map(s=>{
-    const on=p.fame>=s.min;
-    return `<div class="row"><span>${s.n}</span><span class="tag">${on?fmt(s.pay)+" por semana":s.d}</span></div>`;
-  }).join("");
   const done=ACH.filter(a=>a.ok(p)).length;
   $("pAch").innerHTML=`<p class="mut">${done} de ${ACH.length} conquistas</p>`+ACH.map(a=>{
     const ok=a.ok(p);
     return `<div class="ach"><span><i class="mark" style="background:${ok?"#3ecf8e":"#2a313c"}"></i>${a.n}</span><span class="${ok?"good":"mut"}">${ok?"Conquistado":"Pendente"}</span></div>`;
   }).join("");
   const tr=p.trophies||[];
-  $("trophyRoom").innerHTML=tr.length
-    ?`<div class="trophies">${tr.map(t=>`<div class="trophy">${trophyCup()}<b>${t.n}</b><span class="mut">Temporada ${t.season} · ${t.age} anos</span></div>`).join("")}</div>`
-    :`<p class="mut">Nenhum troféu ainda. Conquiste acessos e títulos para encher a sala.</p>`;
+  const camp=tr.filter(t=>(t.cat||"campeonato")==="campeonato");
+  const pess=tr.filter(t=>t.cat==="pessoal");
+  const tile=t=>`<div class="trophy">${trophyCup()}<b>${t.n}</b><span class="mut">Temporada ${t.season} · ${t.age} anos</span></div>`;
+  const sec=(t,body)=>`<h3 style="font-size:13px;margin:10px 0 6px;color:var(--txt)">${t}</h3>${body}`;
+  $("trophyRoom").innerHTML=
+    sec("Campeonatos", camp.length?`<div class="trophies">${camp.map(tile).join("")}</div>`:'<p class="mut">Nenhum título de campeonato ainda.</p>')+
+    sec("Pessoal", pess.length?`<div class="trophies">${pess.map(tile).join("")}</div>`:'<p class="mut">Artilheiro, garçom e melhor da temporada aparecem aqui.</p>');
+  $("pHist").innerHTML=(p.seasons||[]).length
+    ? p.seasons.slice().reverse().map(x=>`<div class="stat"><span>Temp. ${x.season} · ${x.div}</span><b>${x.pos}º · ${x.g} gols · ${x.a} ass.</b></div>`).join("")
+    : '<p class="mut">Sua primeira temporada ainda está em andamento.</p>';
   $("retireBox").classList.toggle("hidden",p.age<30);
 }
 function retire(){
@@ -827,7 +831,7 @@ function renderCalendar(){
       const c=h.my>h.op?"win":h.my===h.op?"draw":"loss";
       shape=`<i class="sq ${c}"></i>`; lbl=h.wo?"W.O.":`${h.my}x${h.op}`;
     } else if(g){
-      shape=`<i class="ci"></i>`; lbl=g.week===p.weekN?"hoje":"";
+      shape=`<i class="ci"></i>`; lbl=g.week===p.weekN?"hoje":(g.label?g.label.split(" · ")[1]:"");
     } else shape=`<i class="dotw"></i>`;
     html+=`<div class="cell ${w===p.weekN?"now":""}"><span class="sub">S${w}</span>${shape}<span class="sub">${lbl}</span></div>`;
   }
@@ -841,6 +845,7 @@ function renderClub(){
   $("cBon").textContent=fmt(p.contract.bonus)+" /gol";
   $("cRes").textContent=fmt(p.contract.res);
   renderCalendar();
+  renderCompBox();
   $("offers").innerHTML=p.offers.map((o,i)=>`
     <div class="card" style="margin:8px 0">
       <div class="row"><b>${o.club}</b><span class="tag">${o.div}</span></div>
@@ -854,8 +859,10 @@ function renderClub(){
 }
 
 // ===== Menu e criação =====
+let AGE=18;
+function cAgeAdj(d){ AGE=clamp(AGE+d,16,30); $("cAgeV").textContent=AGE; }
 function newGame(){
-  S=null; ATTR_POINTS={fin:0,pas:0,dri:0,vel:0,res:0,vis:0,mar:0}; POINTS=12;
+  S=null; AGE=18; ATTR_POINTS={fin:0,pas:0,dri:0,vel:0,res:0,vis:0,mar:0}; POINTS=12; $("cAgeV").textContent=AGE;
   renderCreate(); show("sNew");
 }
 function continueGame(){ if(S) show("sHome"); }
@@ -875,9 +882,9 @@ function cAdj(k,d){
 }
 function startCareer(){
   const name=$("cName").value.trim()||"Jogador";
-  const age=clamp(parseInt($("cAge").value,10)||18,16,30);
+  const age=AGE;
   S={p:newPlayer(name,$("cPos").value,$("cTrait").value,ATTR_POINTS,age)};
-  S.table=null; fillSched(); save(); show("sHome");
+  S.table=null; fillSched(); startSeasonComps(); save(); show("sHome");
 }
 
 // ===== Semana =====
@@ -885,6 +892,7 @@ function endWeek(){
   const p=S.p;
   p.week={tr:0,mk:0,rested:false}; p.weekN++;
   if(p.trait==="disciplinado") p.moral=clamp(p.moral+1,0,100);
+  checkSponsor();
   const inc=sponsorIncome();
   if(inc>0){ p.money+=inc; }
   rollEvent();
@@ -900,9 +908,9 @@ function doTrain(k){
   if(p.trait==="disciplinado") chance+=0.1;
   if(p.age<=21) chance+=0.05;
   if(p.age>=28) chance-=0.05;
-  if(Math.random()<chance && p.a[t.stat]<20){ p.a[t.stat]++; note(`Treino de ${t.n}: ${attrName(t.stat)} subiu para ${p.a[t.stat]}.`); }
+  if(Math.random()<chance && p.a[t.stat]<25){ p.a[t.stat]++; note(`Treino de ${t.n}: ${attrName(t.stat)} subiu para ${p.a[t.stat]}.`); }
   else note(`Treino de ${t.n} sem evolução.`);
-  if(t.extra && Math.random()<0.3 && p.a[t.extra]<20){ p.a[t.extra]++; note(`Treino físico: ${attrName(t.extra)} subiu para ${p.a[t.extra]}.`); }
+  if(t.extra && Math.random()<0.3 && p.a[t.extra]<25){ p.a[t.extra]++; note(`Treino físico: ${attrName(t.extra)} subiu para ${p.a[t.extra]}.`); }
   if(Math.random()<t.inj/100){ p.injury=rnd(1,2); note("Lesão no treino! Descanse para recuperar."); }
   save(); renderAll();
 }
@@ -934,16 +942,16 @@ function doRest(){
 function forfeit(g){
   const p=S.p;
   p.moral=clamp(p.moral-8,0,100);
-  p.hist.push({season:p.season,week:p.weekN,opp:g.opp,my:0,op:3,wo:1});
-  p.round++;
+  p.hist.push({season:p.season,week:p.weekN,opp:g.opp,my:0,op:3,wo:1,comp:g.comp||"liga"});
   p.sched.shift(); fillSched();
+  if(g.comp) advanceComp(g.comp,false); else p.round++;
   note(`Sem condições de jogar: derrota por W.O. contra ${g.opp}.`);
   endWeek();
-  if(p.round>DIVS[p.div].need) checkSeason();
-  save(); renderAll();
+  if(!g.comp && p.round>DIVS[p.div].need) checkSeason();
+  save(); if(p.pendingSeason) show("sSeasonEnd"); else renderAll();
 }
 function upAttr(k){
-  const p=S.p; if(p.pts<=0||p.a[k]>=20) return;
+  const p=S.p; if(p.pts<=0||p.a[k]>=25) return;
   p.a[k]++; p.pts--; save(); renderAll();
 }
 
@@ -1011,6 +1019,45 @@ function pickEvent(i){
   p.ev=null; save(); renderAll();
 }
 
+// ===== Copas e Mundial de Clubes =====
+const COMP_NAME={copa:"Copa",mundial:"Mundial"};
+const COMP_STAGES={copa:["Quartas","Semi","Final"],mundial:["Semi","Final"]};
+function setCourt(kings){
+  const b=$("pitchBase"), st=$("pitchStripes");
+  if(b) b.setAttribute("fill",kings?"#0b2545":"#1f7a3a");
+  if(st) st.style.display=kings?"none":"";
+  $("sMatch").style.background=kings?"#0b2545":"#1f7a3a";
+}
+function queueComp(kind){
+  const p=S.p, c=p.comps[kind]; if(!c) return;
+  const pool=kind==="mundial"?DIVS[2].teams:DIVS[p.div].teams;
+  const opps=pool.filter(t=>t!==p.club);
+  const last=p.sched.length?p.sched[p.sched.length-1].week:p.weekN-1;
+  const w=Math.max(last+rnd(1,2),p.weekN);
+  p.sched.push({week:w,opp:pick(opps),comp:kind,label:`${COMP_NAME[kind]} · ${COMP_STAGES[kind][c.stage]}`});
+  p.sched.sort((a,b)=>a.week-b.week);
+}
+function startSeasonComps(){
+  const p=S.p; p.comps=p.comps||{copa:null,mundial:null};
+  if(!p.comps.copa){ p.comps.copa={stage:0}; queueComp("copa"); }
+}
+function advanceComp(kind,won){
+  const p=S.p, c=p.comps[kind]; if(!c) return;
+  if(!won){ p.comps[kind]=null; note(`${COMP_NAME[kind]}: eliminado nas ${COMP_STAGES[kind][c.stage].toLowerCase()}.`); return; }
+  c.stage++;
+  if(c.stage<COMP_STAGES[kind].length){ queueComp(kind); note(`${COMP_NAME[kind]}: avançou para ${COMP_STAGES[kind][c.stage]}.`); return; }
+  p.comps[kind]=null;
+  if(kind==="copa"){ p.trophies.push({cat:"campeonato",n:`Copa da ${DIVS[p.div].name}`,season:p.season,age:p.age}); p.fame=clamp(p.fame+6,0,100); }
+  else { p.trophies.push({cat:"campeonato",n:"Campeão do Mundial de Clubes",season:p.season,age:p.age}); p.fame=clamp(p.fame+15,0,100); }
+  note(`Você venceu a ${COMP_NAME[kind]}!`);
+}
+function renderCompBox(){
+  const p=S.p, c=p.comps||{};
+  const cupTxt=c.copa?`Em disputa: ${COMP_STAGES.copa[c.copa.stage]}`:"Fora da copa";
+  const muTxt=c.mundial?`Em disputa: ${COMP_STAGES.mundial[c.mundial.stage]}`:(p.div===DIVS.length-1?"Sem vaga no momento":"Liberado só na Knights League");
+  $("compBox").innerHTML=`<div class="row"><span>Copa da ${DIVS[p.div].name}</span><span class="tag">${cupTxt}</span></div><div class="row"><span>Mundial de Clubes</span><span class="tag">${muTxt}</span></div>`;
+}
+
 // ===== Tabela e temporada =====
 function buildTable(){ return DIVS[S.p.div].teams.map(name=>({name,j:0,v:0,e:0,d:0,gp:0,gc:0,pts:0})); }
 function updateTable(win,draw){
@@ -1030,33 +1077,102 @@ function leaguePos(){
 function checkSeason(){
   const p=S.p, div=DIVS[p.div];
   if(p.round<=div.need) return "";
-  const pos=leaguePos(), last=p.div===DIVS.length-1;
-  let txt;
+  const pos=leaguePos(), n=div.teams.length, last=p.div===DIVS.length-1;
+  const oldDiv=div.name, oldClub=p.club, season=p.season;
+  let txt, dir="stay";
   if(pos===1){
-    const t=last?"Campeão da Knights League":`Campeão da ${div.name}`;
-    p.trophies.push({n:t,season:p.season,age:p.age});
+    p.trophies.push({cat:"campeonato",n:last?"Campeão da Knights League":`Campeão da ${div.name}`,season,age:p.age});
+    p.fame=clamp(p.fame+(last?20:8),0,100);
+    if(last){ p.comps.mundial={stage:0}; queueComp("mundial"); }
   }
-  if(!last && pos<=3){
-    p.div++; p.club=DIVS[p.div].teams[0];
-    p.contract.sal=Math.round(p.contract.sal*2); p.contract.bonus=Math.round(p.contract.bonus*1.8); p.contract.res=Math.round(p.contract.res*2);
+  if(!last && pos<=2){
+    p.div++; dir="up";
     p.fame=clamp(p.fame+8,0,100); p.offers=[];
-    p.trophies.push({n:`Acesso à ${DIVS[p.div].name}`,season:p.season,age:p.age});
-    txt=`Promovido! Você foi para a ${DIVS[p.div].name} pelo ${p.club}.`;
-    refreshOpps();
-  } else if(last && pos===1){
-    p.fame=clamp(p.fame+20,0,100); txt="Campeão da Knights League!";
+    p.trophies.push({cat:"campeonato",n:`Acesso à ${DIVS[p.div].name}`,season,age:p.age});
+    txt=`Promovido! Você subiu para a ${DIVS[p.div].name}.`;
+  } else if(p.div>0 && pos>n-2){
+    p.div--; dir="down";
+    p.fame=clamp(p.fame-5,0,100); p.offers=[];
+    txt=`Rebaixado para a ${DIVS[p.div].name}.`;
   } else {
-    txt=`Temporada encerrada em ${pos}º lugar. Continue lutando por acesso.`;
+    txt=`Temporada encerrada em ${pos}º lugar.`;
   }
-  if(pos===1 && !last) p.fame=clamp(p.fame+5,0,100);
+  const ss=p.ss;
+  if(ss.g>=8) p.trophies.push({cat:"pessoal",n:"Artilheiro da temporada",season,age:p.age});
+  if(ss.a>=6) p.trophies.push({cat:"pessoal",n:"Garçom da temporada",season,age:p.age});
+  if(ss.gp>=5 && ss.rt/ss.gp>=7) p.trophies.push({cat:"pessoal",n:"Melhor da temporada",season,age:p.age});
+  const summary={pos,gp:ss.gp,w:ss.w,g:ss.g,a:ss.a,nota:ss.gp?(ss.rt/ss.gp).toFixed(1):"-",
+    trophies:p.trophies.filter(t=>t.season===season).map(t=>t.n)};
+  p.seasons.push({season,div:oldDiv,club:oldClub,pos,g:ss.g,a:ss.a,w:ss.w});
+  p.ss={gp:0,g:0,a:0,w:0};
   p.age++;
   if(p.age>=29 && Math.random()<0.3){
     const k=Math.random()<0.5?"vel":"res";
     if(p.a[k]>1){ p.a[k]--; note(`Com a idade, ${attrName(k)} caiu para ${p.a[k]}.`); }
   }
   p.round=1; p.season++; p.seasonStart=p.weekN; S.table=null;
+  const changed=dir!=="stay";
+  if(changed) refreshOpps();
+  const pool=DIVS[p.div].teams.filter(t=>t!==oldClub).sort(()=>Math.random()-.5).slice(0,3);
+  const mk=c=>({club:c,sal:Math.round(p.contract.sal*(changed?1.5:1.2)),bonus:Math.round(p.contract.bonus*(changed?1.4:1.2)),res:Math.round(p.contract.res*(changed?1.5:1.3))});
+  p.pendingSeason={season,oldDiv,oldClub,pos,dir,txt,changed,newDiv:DIVS[p.div].name,summary,options:pool.map(mk),free:false,done:false};
   note(txt);
+  startSeasonComps();
   return txt;
+}
+function renderSeasonEnd(){
+  const p=S.p, ps=p.pendingSeason;
+  if(!ps) return show("sHome");
+  const sm=ps.summary;
+  $("seTitle").textContent=`Fim da temporada ${ps.season}`;
+  const tro=sm.trophies.length?sm.trophies.map(t=>`<span class="tag">${t}</span>`).join(" "):'<span class="mut">Nenhum troféu nesta temporada</span>';
+  const resumo=`<p class="mut">${ps.txt}</p>
+    <div class="stat"><span>Posição</span><b>${sm.pos}º na ${ps.oldDiv}</b></div>
+    <div class="stat"><span>Campanha</span><b>${sm.gp} jogos · ${sm.w} vitórias</b></div>
+    <div class="stat"><span>Gols · assistências</span><b>${sm.g} · ${sm.a}</b></div>
+    <div class="stat"><span>Nota média</span><b>${sm.nota}</b></div>
+    <p style="margin:10px 0 4px"><b>Troféus da temporada</b></p><div>${tro}</div>`;
+  let contrato;
+  if(ps.done) contrato=`<p style="margin-top:12px"><b>Contrato definido com o ${p.club}.</b></p>`;
+  else if(ps.changed) contrato=`<p style="margin-top:12px" class="mut">Você foi para a ${ps.newDiv}. Escolha um clube novo nesta divisão.</p>`;
+  else if(ps.free) contrato=`<p style="margin-top:12px" class="mut">Contrato rescindido. Escolha seu próximo clube.</p>`;
+  else contrato=`<p style="margin-top:12px" class="mut">Seu contrato com o ${p.club} segue. Renove, rescinda ou troque de clube.</p>`;
+  let acts="";
+  if(!ps.changed && !ps.free && !ps.done){
+    acts=`<div class="grid2"><button onclick="seasonRenew()">Renovar com ${p.club}</button><button class="sec" onclick="seasonRescind()" ${p.money<p.contract.res?"disabled":""}>Rescindir (multa ${fmt(p.contract.res)})</button></div>`;
+  }
+  const clubs=ps.done?"":`${!ps.changed&&!ps.free?'<p class="mut" style="margin-top:12px">Ou troque de clube:</p>':""}`+
+    ps.options.map((o,i)=>`<div class="card" style="margin:8px 0">
+      <div class="row"><b>${o.club}</b><span class="tag">${ps.newDiv}</span></div>
+      <div class="mut">Salário ${fmt(o.sal)}/mês · Bônus ${fmt(o.bonus)}/gol · Multa ${fmt(o.res)}${ps.changed||ps.free?"":` · Taxa ${fmt(Math.round(o.res/3))}`}</div>
+      <button onclick="seasonSign(${i})">Assinar</button>
+    </div>`).join("");
+  const cont=ps.done?`<button style="margin-top:12px" onclick="continueSeason()">Continuar temporada</button>`:"";
+  $("seBody").innerHTML=resumo+contrato+acts+clubs+cont;
+}
+function seasonRenew(){
+  const p=S.p, ps=p.pendingSeason; if(!ps||ps.changed||ps.free||ps.done) return;
+  p.contract.sal=Math.round(p.contract.sal*1.1); p.contract.bonus=Math.round(p.contract.bonus*1.1);
+  ps.done=true; note(`Você renovou com o ${p.club}.`); save(); renderSeasonEnd();
+}
+function seasonRescind(){
+  const p=S.p, ps=p.pendingSeason; if(!ps||ps.changed||ps.free||ps.done) return;
+  const multa=p.contract.res;
+  if(p.money<multa) return toast("Sem dinheiro para pagar a multa de rescisão.");
+  p.money-=multa; ps.free=true;
+  note(`Você rescindiu com o ${p.club} e pagou a multa de ${fmt(multa)}.`); save(); renderSeasonEnd();
+}
+function seasonSign(i){
+  const p=S.p, ps=p.pendingSeason; if(!ps||ps.done) return;
+  const o=ps.options[i]; if(!o) return;
+  const fee=(ps.changed||ps.free)?0:Math.round(o.res/3);
+  if(p.money<fee) return toast("Sem dinheiro para pagar a taxa de transferência.");
+  p.money-=fee; p.club=o.club; p.contract={sal:o.sal,bonus:o.bonus,res:o.res};
+  ps.done=true; refreshOpps(); note(`Você assinou com o ${o.club}!`); save(); renderSeasonEnd();
+}
+function continueSeason(){
+  const p=S.p; if(!p.pendingSeason||!p.pendingSeason.done) return;
+  p.pendingSeason=null; save(); show("sHome");
 }
 function makeOffer(){
   const p=S.p; if(p.div>=DIVS.length-1) return;
@@ -1132,12 +1248,17 @@ function startDay(){
   if(!g || !p.week.rested) return toast("Descanse antes do jogo.");
   if(p.injury>0) return toast("Você está lesionado e não pode jogar.");
   const oppRoster=ROSTERS[g.opp]||DEFAULT_MATES;
-  M={opp:g.opp,str:clamp(DIVS[p.div].str+rnd(-1,1),1,10),tac:"equilibrio",conc:false,warm:false,
+  M={opp:g.opp,str:clamp((g.comp==="mundial"?9:DIVS[p.div].str)+rnd(-1,1),1,10),tac:"equilibrio",conc:false,warm:false,
      step:0,half2:false,myG:0,oppG:0,rating:0,st:{g:0,a:0,y:0},
      halfAtk:0,halfDef:0,velBonus:0,cur:null,phase:"",min:0,
      mate:pick(mates()),star:pick(oppRoster),
      outMine:1,outOpp:1,cap:null,capUntil:0,dado:false,pres:false,desc:false,
-     doubleUntil:0,starOn:false,suspOpp:0,susp:0,yc:0,redOut:false,golden:false,shoot:null,infoCb:null};
+     doubleUntil:0,oppDoubleUntil:0,starOn:false,oppStarOn:false,suspOpp:0,suspMe:0,susp:0,yc:0,redOut:false,golden:false,shoot:null,infoCb:null,penMe:false,penOpp:false};
+  M.comp=g.comp||"liga"; M.label=g.label||""; M.kings=p.div===2||M.comp==="mundial";
+  setCourt(M.kings);
+  $("preRules").textContent=M.kings
+    ?"Regras Kings League: 6 jogadores na linha e goleiro por time, um entra a cada lance. Dado gigante no meio, carta secreta no intervalo, pênalti do presidente nos dois times, desescalonamento no fim e gol de ouro se empatar. Empate vai para os pênaltis."
+    :(M.comp==="liga"?"Regras de futsal: 4 jogadores de linha e goleiro por time, sem dado, cartas secretas ou pênalti do presidente. Empate na liga vale 1 ponto.":"Regras de futsal: 4 jogadores de linha e goleiro por time. Empate na copa vai para os pênaltis.");
   show("sMatch");
   setBall(50); updScore(); updatePlayers();
   $("fieldCount").textContent="";
@@ -1147,7 +1268,7 @@ function startDay(){
 }
 function renderPre(){
   const p=S.p;
-  $("preOpp").textContent=M.opp;
+  $("preOpp").textContent=M.opp+(M.label?` · ${M.label}`:"");
   $("preStar").textContent=M.star;
   $("preMate").textContent=M.mate;
   $("preStr").innerHTML=dots(M.str);
@@ -1180,10 +1301,10 @@ function logM(min,text,tone){
 // quantos jogadores de linha cada time tem em campo neste momento
 function refreshField(){
   const step=M.step;
-  let base=Math.min(6,1+step);
-  if(step>=6) base=Math.max(1,base-(step-5));
+  let base=M.kings?Math.min(6,1+step):Math.min(4,1+step);
+  if(M.kings && step>=6) base=Math.max(1,base-(step-5));
   if(M.cap && step<M.capUntil) base=Math.min(base,M.cap);
-  M.outMine=base;
+  M.outMine=Math.max(1,base-(M.suspMe>0?1:0));
   M.outOpp=Math.max(0,base-(M.suspOpp>0?1:0));
   updatePlayers();
   $("fieldCount").textContent=`Em campo: ${M.outMine+1} x ${M.outOpp+1} (com goleiro)`;
@@ -1206,16 +1327,14 @@ function nextSit(){
   if(M.step===4 && !M.half2){ renderHalf(); showPop("popHalf"); return; }
   if(M.step>=8) return endMatch();
   refreshField();
-  if(M.step===2 && !M.dado){
+  if(M.kings && M.step===2 && !M.dado){
     M.dado=true; M.cap=rnd(1,3); M.capUntil=M.step+2; refreshField();
     logM("",`Dado gigante: partida limitada a ${M.cap}x${M.cap} por dois lances.`,"bad");
     return info("Dado gigante",`O dado caiu no ${M.cap}. Por dois lances a linha vira ${M.cap} contra ${M.cap}.`,["Continuar"],()=>nextSit());
   }
-  if(M.step===5 && !M.pres){
-    M.pres=true;
-    return info("Pênalti do presidente","Seu time tem direito a um pênalti. Você cobra ou manda um atleta?",["Cobrar você mesmo","Mandar o atleta"],i=>{ penalty(i===0?"fin":"vis"); nextSit(); });
-  }
-  if(M.step===6 && !M.desc){
+  if(M.kings && M.step===1 && !M.penMe){ M.penMe=true; presidentPenalty("me"); }
+  if(M.kings && M.step===3 && !M.penOpp){ M.penOpp=true; presidentPenalty("opp"); }
+  if(M.kings && M.step===6 && !M.desc){
     M.desc=true;
     const tie=M.myG===M.oppG;
     if(tie) M.golden=true;
@@ -1235,6 +1354,13 @@ function nextSit(){
   showPop("popPlay");
 }
 function pickOpt(i){ doPick(i,false); }
+function showCenter(text,tone){
+  const el=$("centerMsg");
+  el.textContent=text;
+  el.className="centermsg"+(tone==="good"?" good":tone==="bad"?" badtxt":"");
+  clearTimeout(M.centerTimer);
+  M.centerTimer=setTimeout(()=>el.classList.add("hidden"),2000);
+}
 function doPick(i,auto){
   if(M.phase!=="choice") return;
   M.phase="res";
@@ -1243,8 +1369,10 @@ function doPick(i,auto){
   const r=resolve(o.k,o.s);
   M.step++;
   if(M.suspOpp>0) M.suspOpp--;
+  if(M.suspMe>0) M.suspMe--;
   $("playPrompt").innerHTML=`<span class="mut">${fill(M.cur.t)}</span>${auto?'<br><span class="mut">Seu companheiro resolve o lance.</span>':""}<br><b class="${r.tone==="good"?"good":r.tone==="bad"?"badtxt":""}">${r.text}</b>`;
   logM(M.min+"'",(auto?"Companheiro: ":"")+r.text,r.tone);
+  showCenter((auto?"Companheiro: ":"")+r.text,r.tone);
   if(r.goal) scoreMine();
   if(r.assist) M.st.a++;
   if(r.yellow){
@@ -1262,37 +1390,65 @@ function doPick(i,auto){
   $("playOpts").innerHTML=`<button onclick="nextSit()">Continuar</button>`;
   save();
 }
-function goalMult(){ return M.doubleUntil>M.step?2:1; }
+function goalMultMe(){ return M.doubleUntil>M.step?2:1; }
+function goalMultOpp(){ return M.oppDoubleUntil>M.step?2:1; }
 function scoreMine(){
   const p=S.p;
-  let mult=goalMult();
+  let mult=goalMultMe();
   if(M.starOn){ mult*=2; M.starOn=false; logM("","Jogador estrela: gol valendo dobro!","good"); }
   M.myG+=mult; M.st.g+=1; p.stats.g+=1;
   p.moral=clamp(p.moral+3,0,100); p.fans+=rnd(3,10);
   updScore(); flashField();
 }
 function scoreOpp(){
-  const mult=goalMult();
+  let mult=goalMultOpp();
+  if(M.oppStarOn){ mult*=2; M.oppStarOn=false; }
   M.oppG+=mult; logM(M.min+"'",`Gol do ${M.opp}!`,"bad");
   S.p.moral=clamp(S.p.moral-4,0,100);
+  showCenter(`Gol do ${M.opp}!`,"bad");
   updScore(); flashField();
 }
-function penalty(stat){
-  const sc=eff(stat)+rnd(0,10)-M.str*0.5;
-  if(sc>=10){ scoreMine(); logM("","Pênalti convertido!","good"); }
-  else logM("","Pênalti perdido!","bad");
-  updScore();
+// cobranca de penalti; byPlayer = o atleta cobra (e nao o presidente)
+function takePenalty(side,byPlayer,intro){
+  const me=side==="me";
+  let scored;
+  if(me) scored = byPlayer ? (eff("fin")+rnd(0,10)-M.str*0.5>=10) : Math.random()<0.65;
+  else   scored = byPlayer ? Math.random()<0.45+M.str*0.02 : Math.random()<0.7;
+  if(scored){
+    if(me){ M.myG+=1; M.st.g+=1; S.p.stats.g+=1; S.p.moral=clamp(S.p.moral+3,0,100); S.p.fans+=rnd(3,10); }
+    else { M.oppG+=1; S.p.moral=clamp(S.p.moral-4,0,100); }
+  }
+  const res=scored?"GOL!":"Pênalti perdido.";
+  const t=`${intro} ${res}`;
+  const tone=scored?(me?"good":"bad"):(me?"bad":"good");
+  logM("",t,tone);
+  showCenter(t,tone);
+  updScore(); flashField();
 }
-function applyCard(id){
-  if(id==="gol2"){ M.doubleUntil=M.step+2; logM("","Carta Gol 2x: os gols valem dobro por 2 lances.","good"); }
-  if(id==="pen"){ logM("","Carta Pênalti: cobrança imediata.","good"); penalty("fin"); }
-  if(id==="estrela"){ M.starOn=true; logM("","Carta Jogador estrela: seu próximo gol vale em dobro.","good"); }
-  if(id==="susp"){ M.suspOpp=2; logM("","Carta Suspensão: um adversário fica fora por 2 lances.","good"); }
+function presidentPenalty(side){
+  const me=side==="me";
+  const passes=Math.random()<0.5;
+  let intro;
+  if(me) intro = passes ? "Seu presidente passou a bola para você." : "Seu presidente bateu o pênalti.";
+  else   intro = passes ? `O presidente do ${M.opp} passou para o atleta.` : `O presidente do ${M.opp} bateu o pênalti.`;
+  takePenalty(side,passes,intro);
+}
+function applyCard(id,side){
+  const me=side==="me";
+  const who=me?"Sua carta":`Carta do ${M.opp}`;
   if(id==="coringa"){
     const c=pick(CARDS.filter(x=>x.id!=="coringa"));
-    logM("",`Carta Coringa: virou ${c.n}.`,"good");
-    applyCard(c.id);
+    logM("",`${who}: Coringa virou ${c.n}.`,me?"good":"bad");
+    return applyCard(c.id,side);
   }
+  const card=CARDS.find(c=>c.id===id);
+  const txt=`${who}: ${card.n}. ${card.d}.`;
+  logM("",txt,me?"good":"bad");
+  if(id==="gol2"){ if(me) M.doubleUntil=M.step+2; else M.oppDoubleUntil=M.step+2; }
+  if(id==="pen"){ takePenalty(side,true,`${who}: Pênalti.`); }
+  if(id==="estrela"){ if(me) M.starOn=true; else M.oppStarOn=true; }
+  if(id==="susp"){ if(me) M.suspMe=2; else M.suspOpp=2; }
+  return txt;
 }
 function resolve(k,s){
   const p=S.p, tac=TACTICS[M.tac];
@@ -1323,11 +1479,14 @@ function applyHalf(id){
   if(id==="fech"){ M.halfDef+=2; logM("","Palestra: defesa fechada.",""); }
   if(id==="contra"){ M.halfAtk+=1; M.velBonus+=2; logM("","Palestra: explorar o contra-ataque.",""); }
   M.half2=true;
-  cardChoice();
+  if(M.kings) cardChoice(); else nextSit();
 }
 function cardChoice(){
-  const opts=[...CARDS].sort(()=>Math.random()-0.5).slice(0,3);
-  info("Segundo tempo: carta secreta","Escolha uma carta. O efeito começa agora.",opts.map(c=>`${c.n}: ${c.d}`),i=>{ applyCard(opts[i].id); nextSit(); });
+  const mine=pick(CARDS), theirs=pick(CARDS);
+  applyCard(mine.id,"me");
+  applyCard(theirs.id,"opp");
+  showCenter(`Sua carta: ${mine.n}. Carta do ${M.opp}: ${theirs.n}.`,"");
+  nextSit();
 }
 function shootout(){
   let a=0,b=0;
@@ -1340,27 +1499,29 @@ function shootout(){
 function endMatch(){
   const p=S.p;
   let win=M.myG>M.oppG, draw=M.myG===M.oppG;
-  if(draw){ M.shoot=shootout(); win=M.shoot.a>M.shoot.b; draw=false; }
+  if(draw && (M.kings||M.comp!=="liga")){ M.shoot=shootout(); win=M.shoot.a>M.shoot.b; draw=false; }
   const rating=clamp(Math.round(5.5+M.rating*0.35+(M.myG-M.oppG)*0.4+M.st.a*0.3),1,10);
   const pay=Math.round(p.contract.sal/4+p.contract.bonus*M.myG+(win?150:0));
   p.money+=pay;
   p.stats.gp++; p.stats.a+=M.st.a; if(win) p.stats.w++;
+  const ss=p.ss; ss.gp++; ss.g+=M.st.g; ss.a+=M.st.a; if(win) ss.w++; ss.rt=(ss.rt||0)+rating;
   p.maxGoals=Math.max(p.maxGoals||0,M.myG);
   p.xp+=15+M.myG*5+(win?10:0);
   while(p.xp>=50){ p.xp-=50; p.lvl++; p.pts++; note(`Subiu para o nível ${p.lvl}: 1 ponto de atributo.`); }
   p.fans+=(win?30:10)+M.myG*4;
   p.fame=clamp(p.fame+(win?2:0)+M.myG,0,100);
   p.moral=clamp(p.moral+(win?8:draw?2:-6),0,100);
-  updateTable(win,draw);
-  p.hist.push({season:p.season,week:p.weekN,opp:M.opp,my:M.myG,op:M.oppG});
-  p.round++;
+  if(M.comp==="liga") updateTable(win,draw);
+  p.hist.push({season:p.season,week:p.weekN,opp:M.opp,my:M.myG,op:M.oppG,comp:M.comp});
+  if(M.comp==="liga") p.round++;
   p.sched.shift(); fillSched();
+  if(M.comp!=="liga") advanceComp(M.comp,win);
   endWeek();
   p.energy=clamp(p.energy+10,0,100);
   note(`Resultado: ${p.club} ${M.myG} x ${M.oppG} ${M.opp}${M.shoot?` (pênaltis ${M.shoot.a} x ${M.shoot.b})`:""}. Nota ${rating}.`);
   let promo="";
-  if(p.round>DIVS[p.div].need) promo=checkSeason();
-  else if(p.round%3===0 && p.offers.length<2 && (p.fame>=20||p.ovr>=40)) makeOffer();
+  if(M.comp==="liga" && p.round>DIVS[p.div].need) promo=checkSeason();
+  else if(M.comp==="liga" && p.round%3===0 && p.offers.length<2 && (p.fame>=20||p.ovr>=40)) makeOffer();
   M.result={win,draw,rating,pay,promo,shoot:M.shoot};
   renderEnd(); showPop("popEnd"); save();
 }
@@ -1384,9 +1545,11 @@ if(S){
   const p=S.p;
   p.sched=p.sched||[]; p.hist=p.hist||[]; p.inv=p.inv||{}; p.owned=p.owned||{};
   p.trophies=p.trophies||[]; p.maxGoals=p.maxGoals||0;
+  p.ss=p.ss||{gp:0,g:0,a:0,w:0}; p.seasons=p.seasons||[]; if(p.sponsor===undefined) p.sponsor=null;
   p.shirt=p.shirt||"#4aa3ff"; p.seasonStart=p.seasonStart||1;
   if(!p.age) p.age=18;
   fillSched();
+  p.comps=p.comps||{copa:null,mundial:null}; startSeasonComps();
 }
 show("sMenu");
 </script>
