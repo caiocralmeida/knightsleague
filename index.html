@@ -188,6 +188,10 @@ nav button.on{color:var(--acc)}
         <option value="craque">Craque de rua: drible +2</option>
         <option value="disciplinado">Disciplinado: treino melhor, moral estável</option>
         <option value="pavio">Pavio curto: chute +2, mais faltas</option>
+        <option value="lider">Líder de vestiário: vitórias dão +2 de moral</option>
+        <option value="cerebral">Cabeça de jogo: treinos de visão e passe rendem mais</option>
+        <option value="atleta">Atleta: descanso recupera 10% de energia a mais</option>
+        <option value="carisma">Carismático: marketing traz 20% mais seguidores</option>
       </select>
       <p class="mut" style="margin-top:12px">Distribua 12 pontos (cada atributo começa em 3, máximo 10 na criação).</p>
       <div id="cAttrs"></div>
@@ -456,8 +460,8 @@ nav button.on{color:var(--acc)}
 <script>
 // ===== Dados =====
 const DIVS=[
-  {name:"Amadora",need:14,str:3,teams:["Capinzal FC","Dendê FC","Impedidos do Goti","Real Elite Clube","Fluxo Clube","Funkbal Clube","Fúria Negra","G4X FC"]},
-  {name:"Profissional",need:18,str:6,teams:["Atlético Cimento","Grêmio da Rua","Leões do Bairro","União Ponte","Dragões FC","Unidos da Praça","Lord SC","Nivelados FC","Samurais FC","Lobos Urbanos"]},
+  {name:"Amadora",need:14,str:3,teams:["Vila Imperial","Atlético do Povo","União Tricolor","Estrela Paulista","Ferroviário do Sul","Real Alvinegro","Clube Rubro","Azulão FC","Nacional Serrano","Leões da Vila","Independência FC","Academia Verde"]},
+  {name:"Profissional",need:18,str:6,teams:["Condal FC","Coroa Vermelha FC","Baviera Sul FC","Antigo Turim FC","Milão Azurra FC","Parisiense Lumière FC","Vestfália FC","Londres Canhões FC","Lisboa Esmeralda FC","Porto Anil FC"]},
   {name:"Knights League",need:9,str:9,teams:["Knights Elite","Titãs da Zona","Fênix FC","Reis do Asfalto","Real Elite Clube","Fluxo Clube","Dendê FC","Capinzal FC","Funkbal Clube","Fúria Negra"]},
 ];
 const ROSTERS={
@@ -477,7 +481,7 @@ const DEFAULT_MATES=["Rafa Tavares","Bruno Lima","Caio Mendonça","Pedro Gomes",
 const ATTRS=[["fin","Finalização"],["pas","Passe"],["dri","Drible"],["vel","Velocidade"],["res","Resistência"],["vis","Visão"],["mar","Marcação"]];
 const attrName=k=>ATTRS.find(a=>a[0]===k)[1];
 const POS={goleiro:"Goleiro",fixo:"Fixo",ala:"Ala",pivo:"Pivô"};
-const TRAITS={craque:{n:"Craque de rua"},disciplinado:{n:"Disciplinado"},pavio:{n:"Pavio curto"}};
+const TRAITS={craque:{n:"Craque de rua"},disciplinado:{n:"Disciplinado"},pavio:{n:"Pavio curto"},lider:{n:"Líder de vestiário"},cerebral:{n:"Cabeça de jogo"},atleta:{n:"Atleta"},carisma:{n:"Carismático"}};
 const TRAINS={
   fin:{n:"Finalização",stat:"fin",e:18,inj:3,desc:"Chutes de perto e de longe"},
   pas:{n:"Passe",stat:"pas",e:12,inj:1,desc:"Tabelas e lançamentos"},
@@ -502,6 +506,12 @@ const EQUIP=[
   {id:"camisa",n:"Camisa térmica",p:800,b:{res:1},d:"Resistência +1"},
   {id:"cane",n:"Caneleira de carbono",p:600,b:{mar:1},d:"Marcação +1"},
   {id:"bola",n:"Bola de treino pessoal",p:500,b:{pas:1,dri:1},d:"Passe +1, drible +1"},
+  {id:"meia",n:"Meias de compressão",p:400,b:{res:1},d:"Resistência +1"},
+  {id:"tenis",n:"Tênis de corrida",p:1000,b:{vel:1,res:1},d:"Velocidade +1, resistência +1"},
+  {id:"joelheira",n:"Joelheira de proteção",p:700,b:{mar:1,res:1},d:"Marcação +1, resistência +1"},
+  {id:"faixa",n:"Faixa de capitão",p:1500,b:{vis:1,pas:1},d:"Visão +1, passe +1"},
+  {id:"monitor",n:"Monitor cardíaco",p:2500,b:{res:1,vis:1},d:"Resistência +1, visão +1"},
+  {id:"elite",n:"Chuteira de elite",p:3000,b:{fin:2,vel:1},d:"Finalização +2, velocidade +1"},
 ];
 const SPONSORS=[
   {id:"trovao",n:"Energético Trovão",tier:"baixo",min:0,pay:120,d:"Sem exigência de fama"},
@@ -611,7 +621,7 @@ function newPlayer(name,pos,trait,extra,age){
   return {name,pos,trait,age,a,energy:100,moral:60,fame:5,fans:120,xp:0,lvl:1,pts:0,
     div:0,round:1,season:1,seasonStart:1,weekN:1,week:{tr:0,mk:0,rested:false},injury:0,
     club:DIVS[0].teams[0],contract:{sal:500,bonus:50,res:3000},money:1200,
-    stats:{gp:0,g:0,a:0,w:0},maxGoals:0,trophies:[],comps:{copa:null,mundial:null},offers:[],ovr:0,sched:[],hist:[],
+    stats:{gp:0,g:0,a:0,w:0},maxGoals:0,trophies:[],comps:{copa:null,mundial:null,mundialF:null},offers:[],ovr:0,sched:[],hist:[],
     inv:{},owned:{},shirt:"#4aa3ff",ss:{gp:0,g:0,a:0,w:0},seasons:[],sponsor:null,
     news:["Sua carreira começou na Amadora. Mostre serviço!"]};
 }
@@ -906,6 +916,7 @@ function doTrain(k){
   p.week.tr++; p.energy=clamp(p.energy-t.e,0,100);
   let chance=clamp(0.7-(eff(t.stat)-8)*0.04,0.25,0.85);
   if(p.trait==="disciplinado") chance+=0.1;
+  if(p.trait==="cerebral"&&(t.stat==="vis"||t.stat==="pas")) chance+=0.1;
   if(p.age<=21) chance+=0.05;
   if(p.age>=28) chance-=0.05;
   if(Math.random()<chance && p.a[t.stat]<25){ p.a[t.stat]++; note(`Treino de ${t.n}: ${attrName(t.stat)} subiu para ${p.a[t.stat]}.`); }
@@ -920,7 +931,7 @@ function doMkt(i){
   if(p.week.mk>=1) return toast("Limite de 1 marketing por semana atingido.");
   if(p.energy<m.e) return toast("Energia insuficiente.");
   p.week.mk++; p.energy=clamp(p.energy-m.e,0,100); p.moral=clamp(p.moral-m.m,0,100);
-  const g=rnd(m.fans[0],m.fans[1]); p.fans+=g; p.fame=clamp(p.fame+m.fame,0,100);
+  const g=Math.round(rnd(m.fans[0],m.fans[1])*(p.trait==="carisma"?1.2:1)); p.fans+=g; p.fame=clamp(p.fame+m.fame,0,100);
   note(`${m.n}: +${g} seguidores. Moral e energia caíram.`);
   save(); renderAll();
 }
@@ -928,7 +939,7 @@ function doRest(){
   const p=S.p; if(p.week.rested) return;
   const g=gameThisWeek();
   const wasInj=p.injury>0;
-  p.energy=clamp(p.energy+30,0,100); p.moral=clamp(p.moral-5,0,100);
+  p.energy=clamp(p.energy+(p.trait==="atleta"?40:30),0,100); p.moral=clamp(p.moral-5,0,100);
   if(p.injury>0){ p.injury--; if(p.injury===0) note("Você se recuperou da lesão."); }
   if(g && wasInj){ forfeit(g); return; }
   if(g){
@@ -1020,8 +1031,12 @@ function pickEvent(i){
 }
 
 // ===== Copas e Mundial de Clubes =====
-const COMP_NAME={copa:"Copa",mundial:"Mundial"};
-const COMP_STAGES={copa:["Quartas","Semi","Final"],mundial:["Semi","Final"]};
+const COMP_NAME={copa:"Copa",mundial:"Mundial de Clubes",mundialF:"Mundial de Futsal"};
+const COMP_STAGES={copa:["Quartas","Semi","Final"],mundial:["Grupo","Grupo","Semi","Final"],mundialF:["Grupo","Grupo","Semi","Final"]};
+const MUNDIAL_EXTRAS={
+  mundial:["Fúria do Morro","Reino Negro FC","Trovões da Quebrada","Guerreiros do Asfalto","Garra de Aço FC","Dragões do Subúrbio","Caveira Urbana FC","Coroados da Zona","Relâmpago Urbano FC"],
+  mundialF:["Falcões do Salão","Tubarões do Ginásio","Titã Indoor FS","Corvos da Quadra","Mosqueteiros FS","Águias do Ginásio","Aço Real Futsal","Estrela Indoor FC","Pantera do Salão"],
+};
 function setCourt(kings){
   const b=$("pitchBase"), st=$("pitchStripes");
   if(b) b.setAttribute("fill",kings?"#0b2545":"#1f7a3a");
@@ -1030,32 +1045,50 @@ function setCourt(kings){
 }
 function queueComp(kind){
   const p=S.p, c=p.comps[kind]; if(!c) return;
-  const pool=kind==="mundial"?DIVS[2].teams:DIVS[p.div].teams;
-  const opps=pool.filter(t=>t!==p.club);
+  let opp;
+  if(kind==="copa") opp=pick(DIVS[p.div].teams.filter(t=>t!==p.club));
+  else if(c.stage<2) opp=c.rivals[c.stage];
+  else opp=pick(MUNDIAL_EXTRAS[kind].filter(t=>t!==p.club&&!c.rivals.includes(t)));
   const last=p.sched.length?p.sched[p.sched.length-1].week:p.weekN-1;
   const w=Math.max(last+rnd(1,2),p.weekN);
-  p.sched.push({week:w,opp:pick(opps),comp:kind,label:`${COMP_NAME[kind]} · ${COMP_STAGES[kind][c.stage]}`});
+  p.sched.push({week:w,opp,comp:kind,label:`${({copa:"Copa",mundial:"Mundial",mundialF:"Futsal"})[kind]} · ${COMP_STAGES[kind][c.stage]}`});
   p.sched.sort((a,b)=>a.week-b.week);
 }
 function startSeasonComps(){
-  const p=S.p; p.comps=p.comps||{copa:null,mundial:null};
+  const p=S.p; p.comps=p.comps||{copa:null,mundial:null,mundialF:null};
   if(!p.comps.copa){ p.comps.copa={stage:0}; queueComp("copa"); }
+}
+function qualifyMundial(kind){
+  const p=S.p; if(p.comps[kind]) return;
+  const rv=MUNDIAL_EXTRAS[kind].filter(t=>t!==p.club).sort(()=>Math.random()-.5).slice(0,2);
+  p.comps[kind]={stage:0,w:0,rivals:rv};
+  queueComp(kind);
+  note(`Sua equipe está classificada para o ${COMP_NAME[kind]}!`);
 }
 function advanceComp(kind,won){
   const p=S.p, c=p.comps[kind]; if(!c) return;
+  if(kind!=="copa" && c.stage<2){
+    c.w=(c.w||0)+(won?1:0); c.stage++;
+    if(c.stage<2){ queueComp(kind); return; }
+    if(c.w<1){ p.comps[kind]=null; note(`${COMP_NAME[kind]}: eliminado na fase de grupos.`); return; }
+    queueComp(kind); note(`${COMP_NAME[kind]}: avançou para a semifinal.`); return;
+  }
   if(!won){ p.comps[kind]=null; note(`${COMP_NAME[kind]}: eliminado nas ${COMP_STAGES[kind][c.stage].toLowerCase()}.`); return; }
   c.stage++;
   if(c.stage<COMP_STAGES[kind].length){ queueComp(kind); note(`${COMP_NAME[kind]}: avançou para ${COMP_STAGES[kind][c.stage]}.`); return; }
   p.comps[kind]=null;
-  if(kind==="copa"){ p.trophies.push({cat:"campeonato",n:`Copa da ${DIVS[p.div].name}`,season:p.season,age:p.age}); p.fame=clamp(p.fame+6,0,100); }
-  else { p.trophies.push({cat:"campeonato",n:"Campeão do Mundial de Clubes",season:p.season,age:p.age}); p.fame=clamp(p.fame+15,0,100); }
+  if(kind==="copa"){ p.copaWonSeason=p.season; p.trophies.push({cat:"campeonato",n:`Copa da ${DIVS[p.div].name}`,season:p.season,age:p.age}); p.fame=clamp(p.fame+6,0,100); }
+  else { p.trophies.push({cat:"campeonato",n:`Campeão do ${COMP_NAME[kind]}`,season:p.season,age:p.age}); p.fame=clamp(p.fame+15,0,100); }
   note(`Você venceu a ${COMP_NAME[kind]}!`);
 }
 function renderCompBox(){
   const p=S.p, c=p.comps||{};
   const cupTxt=c.copa?`Em disputa: ${COMP_STAGES.copa[c.copa.stage]}`:"Fora da copa";
-  const muTxt=c.mundial?`Em disputa: ${COMP_STAGES.mundial[c.mundial.stage]}`:(p.div===DIVS.length-1?"Sem vaga no momento":"Liberado só na Knights League");
-  $("compBox").innerHTML=`<div class="row"><span>Copa da ${DIVS[p.div].name}</span><span class="tag">${cupTxt}</span></div><div class="row"><span>Mundial de Clubes</span><span class="tag">${muTxt}</span></div>`;
+  const mt=k=>c[k]?`Em disputa: ${COMP_STAGES[k][c[k].stage]}`:"Sem vaga";
+  $("compBox").innerHTML=`<div class="row"><span>Copa da ${DIVS[p.div].name}</span><span class="tag">${cupTxt}</span></div>
+    <div class="row"><span>Mundial de Clubes</span><span class="tag">${mt("mundial")}</span></div>
+    <div class="row"><span>Mundial de Futsal</span><span class="tag">${mt("mundialF")}</span></div>
+    <p class="mut" style="margin:8px 0 0">Classificam: 2 primeiros da liga e o campeão da copa. Se o campeão da copa estiver entre os 2 primeiros, o 3º também vai.</p>`;
 }
 
 // ===== Tabela e temporada =====
@@ -1083,7 +1116,6 @@ function checkSeason(){
   if(pos===1){
     p.trophies.push({cat:"campeonato",n:last?"Campeão da Knights League":`Campeão da ${div.name}`,season,age:p.age});
     p.fame=clamp(p.fame+(last?20:8),0,100);
-    if(last){ p.comps.mundial={stage:0}; queueComp("mundial"); }
   }
   if(!last && pos<=2){
     p.div++; dir="up";
@@ -1101,6 +1133,11 @@ function checkSeason(){
   if(ss.g>=8) p.trophies.push({cat:"pessoal",n:"Artilheiro da temporada",season,age:p.age});
   if(ss.a>=6) p.trophies.push({cat:"pessoal",n:"Garçom da temporada",season,age:p.age});
   if(ss.gp>=5 && ss.rt/ss.gp>=7) p.trophies.push({cat:"pessoal",n:"Melhor da temporada",season,age:p.age});
+  const sorted=(S.table||buildTable()).slice().sort((a,b)=>b.pts-a.pts||(b.gp-b.gc)-(a.gp-a.gc));
+  const top2=sorted.slice(0,2).map(x=>x.name);
+  const champ=p.copaWonSeason===season?oldClub:pick(div.teams.filter(t=>t!==oldClub));
+  const q=new Set(top2); q.add(champ); if(top2.includes(champ)) q.add(sorted[2].name);
+  if(q.has(oldClub)) qualifyMundial(div===DIVS[2]?"mundial":"mundialF");
   const summary={pos,gp:ss.gp,w:ss.w,g:ss.g,a:ss.a,nota:ss.gp?(ss.rt/ss.gp).toFixed(1):"-",
     trophies:p.trophies.filter(t=>t.season===season).map(t=>t.n)};
   p.seasons.push({season,div:oldDiv,club:oldClub,pos,g:ss.g,a:ss.a,w:ss.w});
@@ -1511,6 +1548,7 @@ function endMatch(){
   p.fans+=(win?30:10)+M.myG*4;
   p.fame=clamp(p.fame+(win?2:0)+M.myG,0,100);
   p.moral=clamp(p.moral+(win?8:draw?2:-6),0,100);
+  if(p.trait==="lider"&&win) p.moral=clamp(p.moral+2,0,100);
   if(M.comp==="liga") updateTable(win,draw);
   p.hist.push({season:p.season,week:p.weekN,opp:M.opp,my:M.myG,op:M.oppG,comp:M.comp});
   if(M.comp==="liga") p.round++;
@@ -1549,7 +1587,10 @@ if(S){
   p.shirt=p.shirt||"#4aa3ff"; p.seasonStart=p.seasonStart||1;
   if(!p.age) p.age=18;
   fillSched();
-  p.comps=p.comps||{copa:null,mundial:null}; startSeasonComps();
+  p.comps=p.comps||{copa:null,mundial:null,mundialF:null};
+  for(const k of ["mundial","mundialF"]) if(p.comps[k] && !p.comps[k].rivals) p.comps[k]=null;
+  if(!DIVS[p.div].teams.includes(p.club)){ p.club=pick(DIVS[p.div].teams); S.table=null; refreshOpps(); }
+  startSeasonComps();
 }
 show("sMenu");
 </script>
